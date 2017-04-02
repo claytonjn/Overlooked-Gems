@@ -9,6 +9,21 @@
     //Connect to SierraDNA
 	$sierraDNAconn = db_sierradna();
 
+    //mat_type
+    //in_lib
+
+    $extraJoins = "";
+    $extraWheres = "";
+    if (isset($_GET['patron_id'])) {
+        $extraJoins .= "    LEFT JOIN	(SELECT		reading_history.bib_record_metadata_id
+                                		FROM		sierra_view.reading_history
+                                		LEFT JOIN	sierra_view.patron_view
+                                		ON 		    reading_history.patron_record_metadata_id = patron_view.id
+                                		WHERE		patron_view.record_num = '{$_GET['patron_id']}') AS rh
+                            ON		    bv.id = rh.bib_record_metadata_id";
+        $extraWheres .= "    AND		    rh.bib_record_metadata_id IS NULL";
+    }
+
     //Pull things
     $pullQuery = "  DROP TABLE IF EXISTS things;";
     $pullQuery .= " CREATE TEMP TABLE things
@@ -28,7 +43,9 @@
                     ON		    bv.id = brirl.bib_record_id
                     LEFT JOIN	sierra_view.item_view iv
                     ON		    brirl.item_record_id = iv.id
-                    WHERE		iv.item_message_code != 'f'
+                    {$extraJoins}
+                    WHERE		bv.record_creation_date_gmt IS NOT NULL
+                    AND		    iv.item_message_code != 'f'
                     AND	    	(iv.location_code = 'bfic'
                         		OR iv.location_code = 'bmyst'
                         		OR iv.location_code = 'bnba'
@@ -38,6 +55,7 @@
                         		OR iv.location_code = 'mmyst'
                         		OR iv.location_code = 'mnba'
                         		OR iv.location_code = 'mscfi')
+                    {$extraWheres}
                     GROUP BY	bv.id, bv.bcode2, bv.record_num, brp.best_author, brp.best_title, bv.record_creation_date_gmt
                     ORDER BY	bv.record_creation_date_gmt DESC
                     LIMIT		100;";
@@ -58,15 +76,15 @@
             		ON          t.bib_record_id = v.record_id;";
     $pullQuery .= " SELECT		t.bib_record_num,
                         		CASE WHEN	t.bcode2 = 'b'		/*	Book on CD (5)			*/
-                        				OR t.bcode2 = 'a'	/*	Book (7)			*/
-                        				OR t.bcode2 = 'l'	/*	Large Print (10)		*/
-                        				OR t.bcode2 = 'k' 	/*	eAudio (13)			*/
-                        				OR t.bcode2 = 'i'	/*	Book on Tape (15)		*/
-                        				OR t.bcode2 = 'p'	/*	Book on MP3 (23)		*/
-                        				OR t.bcode2 = 'z'	/*	eBook (24)			*/
-                        				OR t.bcode2 = 'm'	/*	Discovery Tablet		*/
-                        				OR t.bcode2 = 'o'	/*	ReadAlong			*/
-                        				OR t.bcode2 = '$'	/*	Rental (25)			*/
+                            				OR t.bcode2 = 'a'	/*	Book (7)		     	*/
+                            				OR t.bcode2 = 'l'	/*	Large Print (10)		*/
+                            				OR t.bcode2 = 'k' 	/*	eAudio (13)			    */
+                            				OR t.bcode2 = 'i'	/*	Book on Tape (15)		*/
+                            				OR t.bcode2 = 'p'	/*	Book on MP3 (23)		*/
+                            				OR t.bcode2 = 'z'	/*	eBook (24)			    */
+                            				OR t.bcode2 = 'm'	/*	Discovery Tablet		*/
+                            				OR t.bcode2 = 'o'	/*	ReadAlong			    */
+                            				OR t.bcode2 = '$'	/*	Rental (25)			    */
                         		THEN
                         				(SELECT 	DISTINCT ON (v.record_id) v.field_content
                         				FROM 		varfields v
@@ -89,7 +107,7 @@
                         		FROM 		varfields
                         		WHERE 		marc_tag = '245'
                         		ORDER BY 	record_id, occ_num ASC) vt
-                        		ON t.bib_record_id = vt.record_id;";
+                    ON          t.bib_record_id = vt.record_id;";
 
     $sierraResult = pg_query($sierraDNAconn, $pullQuery) or die('Query failed: ' . pg_last_error());
 
