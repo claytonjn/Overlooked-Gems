@@ -25,12 +25,12 @@
         $offset = $_GET['offset'];
     }
 
-    if(isset($_GET['patron_id'])) {
+    if(isset($_GET['patron_record_num'])) {
         $extraJoins .= "    LEFT JOIN	(SELECT		reading_history.bib_record_metadata_id
                                 		FROM		sierra_view.reading_history
                                 		LEFT JOIN	sierra_view.patron_view
                                 		ON 		    reading_history.patron_record_metadata_id = patron_view.id
-                                		WHERE		patron_view.record_num = '{$_GET['patron_id']}') AS rh
+                                		WHERE		patron_view.record_num = '{$_GET['patron_record_num']}') AS rh
                             ON		    bv.id = rh.bib_record_metadata_id";
         $extraWheres .= "    AND		    rh.bib_record_metadata_id IS NULL";
     }
