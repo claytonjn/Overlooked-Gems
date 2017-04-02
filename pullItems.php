@@ -25,6 +25,15 @@
         $offset = $_GET['offset'];
     }
 
+    if(isset($_GET['available'])) {
+        if($_GET['available'] == 'y') {
+            $extraJoins .= "    LEFT JOIN   sierra_view.checkout c
+                                ON          c.item_record_id = brirl.item_record_id";
+            $extraWheres .= "   AND c.item_record_id IS NULL
+                                AND iv.item_status_code = '-'
+				                AND iv.record_creation_date_gmt < (CURRENT_TIMESTAMP - INTERVAL '1 DAY')";
+        }
+    }
     if(isset($_GET['patron_record_num'])) {
         $extraJoins .= "    LEFT JOIN	(SELECT		reading_history.bib_record_metadata_id
                                 		FROM		sierra_view.reading_history
