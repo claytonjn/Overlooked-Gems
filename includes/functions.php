@@ -1,0 +1,49 @@
+<?php
+
+	function getCheckDigit($recnum) { //https://github.com/dswalker/shrew/blob/master/sierra/lib/Sierra.php
+		$seq = array_reverse(str_split($recnum));
+		$sum = 0;
+		$multiplier = 2;
+
+		foreach ($seq as $digit) {
+			$digit *= $multiplier;
+			$sum += $digit;
+			$multiplier++;
+		}
+		$check = $sum % 11;
+
+		if ($check == 10) {
+		    return 'x';
+		} else {
+    		return strval($check);
+    	}
+
+	}
+
+	function cleanFromSierra($field, $string) {
+		switch ($field) {
+			case "author":
+				$pattern = "/([^\d,\.]*,?[^\d,\.]*)(?:,|\.)?.*/";
+				$replacement = "$1";
+				break;
+			case "title":
+				$pattern = "/\|a(((?!\/\||\||\/$).)*)\/?|\|b(((?!\/\||\||\/$).)*)\/?|\|c(((?!\/\||\||\/$).)*)\/?|\|f(((?!\/\||\||\/$).)*)\/?|\|g(((?!\/\||\||\/$).)*)\/?|\|h(((?!\/\||\||\/$).)*)\/?|\|k(((?!\/\||\||\/$).)*)\/?|\|n(((?!\/\||\||\/$).)*)\/?|\|p(((?!\/\||\||\/$).)*)\/?|\|s(((?!\/\||\||\/$).)*)\/?/";
+				$replacement = "$1 $3 $11 $15 $17 $19";
+				break;
+			case "ident":
+				$pattern = "/\|a(\w*).*|\|c(\w*).*|\|d(\w*).*|\|z(\w*).*/";
+				$replacement = "$1";
+				break;
+			case "edition":
+				$pattern = "/\|a(((?!\|).)*)|\|b(((?!\|).)*)/";
+				$replacement = "$1 $3";
+				break;
+		}
+
+		$string = preg_replace($pattern, $replacement, $string);
+		$string = preg_replace('/\s+/S', " ", $string); //collapse multiple spaces
+		$string = trim($string);
+		return $string;
+	}
+
+?>
