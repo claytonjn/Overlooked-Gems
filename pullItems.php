@@ -12,9 +12,20 @@
     //mat_type
     //in_lib
 
+    //Initialize variables
+    $limit = "100";
+    $offset = "0";
     $extraJoins = "";
     $extraWheres = "";
-    if (isset($_GET['patron_id'])) {
+
+    if(isset($_GET['limit'])) {
+        $limit = $_GET['limit'];
+    }
+    if(isset($_GET['offset'])) {
+        $offset = $_GET['offset'];
+    }
+
+    if(isset($_GET['patron_id'])) {
         $extraJoins .= "    LEFT JOIN	(SELECT		reading_history.bib_record_metadata_id
                                 		FROM		sierra_view.reading_history
                                 		LEFT JOIN	sierra_view.patron_view
@@ -58,7 +69,7 @@
                     {$extraWheres}
                     GROUP BY	bv.id, bv.bcode2, bv.record_num, brp.best_author, brp.best_title, bv.record_creation_date_gmt
                     ORDER BY	bv.record_creation_date_gmt DESC
-                    LIMIT		100;";
+                    LIMIT		{$limit} OFFSET {$offset};";
     $pullQuery .= " DROP TABLE IF EXISTS varfields;";
     $pullQuery .= " CREATE TEMP TABLE varfields
                     (
