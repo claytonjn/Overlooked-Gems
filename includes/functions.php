@@ -1,25 +1,5 @@
 <?php
 
-	function getCheckDigit($recnum) { //https://github.com/dswalker/shrew/blob/master/sierra/lib/Sierra.php
-		$seq = array_reverse(str_split($recnum));
-		$sum = 0;
-		$multiplier = 2;
-
-		foreach ($seq as $digit) {
-			$digit *= $multiplier;
-			$sum += $digit;
-			$multiplier++;
-		}
-		$check = $sum % 11;
-
-		if ($check == 10) {
-		    return 'x';
-		} else {
-    		return strval($check);
-    	}
-
-	}
-
 	function cleanFromSierra($field, $string) {
 		switch ($field) {
 			case "author":

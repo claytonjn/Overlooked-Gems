@@ -153,7 +153,6 @@
     $json = "[";
 
     while ($row = pg_fetch_assoc($sierraResult)) {
-        $row['bib_record_num'] = "b" . $row['bib_record_num'] . getCheckDigit($row['bib_record_num']);
         $row['ident'] = cleanFromSierra("ident", $row['ident']);
         $row['author'] = cleanFromSierra("author", $row['author']);
 		$row['title'] = cleanFromSierra("title", $row['title']);
