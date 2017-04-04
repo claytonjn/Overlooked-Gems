@@ -83,7 +83,10 @@ $('#og-list').empty();
 
 			$.each(books_json, function( index, value ) {
 
-				var encoreURL = 'http://encore.wblib.org/iii/encore/record/C__Rb' + value['bib_record_num'];
+				// remove check digit for Encore display
+				var check = value['bib_record_num'].slice(0,-1);
+				
+				var encoreURL = 'http://encore.wblib.org/iii/encore/record/C__R' + value['bib_record_num'];
 				var imgURL = 'http://www.syndetics.com/index.aspx?isbn=' + value['ident'] + '/MC.GIF&client=arfayetteville&type=xw10\" alt=\"\"';
 
 				$('#og-list').append('<li><a href="' + encoreURL + '"><img src="' + imgURL + '" onload="checkCovers(this)" alt="" /></a><a href="' + encoreURL + '" class="details"><span class="title">' + value['title'] + '</span><span class="author">' + value['author'] + '</span></a></li>');
