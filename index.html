@@ -26,7 +26,7 @@
 <header>
 <div class="dropdown" id="media" data-val="book">
   <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Choose media
+    Media: Book
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
     <a class="dropdown-item" data-mat-code="book" href="#">Book</a>
@@ -37,32 +37,30 @@
 </div>
 
 
-<div class="dropdown" id="patron_id" data-val="0">
+
+<div class="dropdown" id="available" data-val="n">
   <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Select user name
+    All Items
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item" data-avail="n" href="#">All Items</a>
+	<a class="dropdown-item" data-avail="y" href="#">Available Items</a>
+  </div>
+</div>
+
+
+
+<div class="dropdown" id="patron_id" data-val="null" style="float:right;">
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Login
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
     <a class="dropdown-item" data-pat-id="1" href="#">User Name 1</a>
     <a class="dropdown-item" data-pat-id="2" href="#">User Name 2</a>
     <a class="dropdown-item" data-pat-id="3" href="#">User Name 3</a>
+	<a class="dropdown-item" data-pat-id="null" href="#">Logout</a>
   </div>
 </div>
-
-
-<div class="dropdown" id="available" data-val="y">
-  <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Where are you?
-  </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    <a class="dropdown-item" data-avail="y" href="#">Here</a>
-    <a class="dropdown-item" data-avail="n" href="#">Elsewhere</a>
-  </div>
-</div>
-
-
-
-
-
 
 
 </header>

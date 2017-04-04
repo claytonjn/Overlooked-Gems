@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-	query('book','y',null);
+	query('book','n',null);
 
 });
 
@@ -23,7 +23,7 @@ $('#available').find('.dropdown-item').click(function() {
 
 	$(this).closest('.dropdown').attr('data-val', $(this).data('avail') );
 
-	$('#available').find('button').text( 'You are ' + $(this).text().toLowerCase() + '.');
+	$('#available').find('button').text( $(this).text());
 
 	query( $('#media').closest('.dropdown').attr('data-val'), $('#available').closest('.dropdown').attr('data-val'), $('#patron_id').closest('.dropdown').attr('data-val' ) );
 
@@ -33,11 +33,18 @@ $('#available').find('.dropdown-item').click(function() {
 
 
 $('#patron_id').find('.dropdown-item').click(function() {
-
+	
+	
 	$(this).closest('.dropdown').attr('data-val', $(this).data('pat-id') );
 
-	$('#patron_id').find('button').text( 'Hello, ' + $(this).text().toLowerCase() + '.');
-
+	if($(this).data('pat-id') == null)
+	{
+		$('#patron_id').find('button').text('Login');
+	}
+	else
+	{
+		$('#patron_id').find('button').text( 'Hello, ' + $(this).text().toLowerCase());
+	}
 	query( $('#media').closest('.dropdown').attr('data-val'), $('#available').closest('.dropdown').attr('data-val'), $(this).data('pat-id') );
 
 
@@ -69,7 +76,7 @@ $('#og-list').empty();
 
 	$.ajax({
   			method: "GET",
-  			url: "pullItems.php?v=1.1&limit=10",
+  			url: "pullItems.php?v=1.1",
  			data: { format: mat, available: loc, patron_record_num: pat  }
 		})
   		.done(function( books_json ) {
