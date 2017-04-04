@@ -150,7 +150,7 @@
 
     $sierraResult = pg_query($sierraDNAconn, $pullQuery) or die('Query failed: ' . pg_last_error());
 
-    $json = "{\"things\":{\"thing\":[";
+    $json = "[";
 
     while ($row = pg_fetch_assoc($sierraResult)) {
         $row['bib_record_num'] = "b" . $row['bib_record_num'] . getCheckDigit($row['bib_record_num']);
@@ -162,7 +162,7 @@
 
     $json = substr($json, 0, -1);
 
-    $json .= "]}}";
+    $json .= "]";
 
     echo $json;
 
