@@ -24,7 +24,7 @@
         $offset = $_GET['offset'];
     }
 
-    if(isset(`$_GET['format']`)) {
+    if(isset($_GET['format'])) {
         $format = $_GET['format'];
         if(strcasecmp($format, 'Book') == 0) {
             $extraWheres .= "   AND (iv.location_code = 'bfic'
@@ -153,7 +153,7 @@
         $row['ident'] = cleanFromSierra("ident", $row['ident']);
         $row['author'] = cleanFromSierra("author", $row['author']);
 		$row['title'] = cleanFromSierra("title", $row['title']);
-        $json .= "{\"bib_record_num\":\"{$row['bib_record_num']}\",\"ident\":\"{$row['ident']}\",\"title\":\"{$row['title']}\",\"author\":\"{$row['author']}\"},";
+        $json .= json_encode($row) . ",";
     }
 
     $json = substr($json, 0, -1);
