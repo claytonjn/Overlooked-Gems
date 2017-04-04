@@ -78,6 +78,9 @@ $('#og-list').empty();
 			$.each(books_json, function( index, value ) {
 
 
+			var bib_record_num = value['bib_record_num'].substring(0,value['bib_record_num'].length - 1)
+
+
 				var img = new Image();
 				img.onload = function() {
   					if (this.width > 1) {
