@@ -10,7 +10,6 @@
 	$sierraDNAconn = db_sierradna();
 
     //mat_type
-    //in_lib
 
     //Initialize variables
     $limit = "100";
@@ -23,6 +22,35 @@
     }
     if(isset($_GET['offset'])) {
         $offset = $_GET['offset'];
+    }
+
+    if(isset(`$_GET['format']`)) {
+        $format = $_GET['format'];
+        if(strcasecmp($format, 'Book') == 0) {
+            $extraWheres .= "   AND (iv.location_code = 'bfic'
+                                OR  iv.location_code = 'bmyst'
+                                OR  iv.location_code = 'bnba'
+                                OR  iv.location_code = 'broma'
+                                OR  iv.location_code = 'bscfi'
+                                OR  iv.location_code = 'mfic'
+                                OR  iv.location_code = 'mmyst'
+                                OR  iv.location_code = 'mnba'
+                                OR  iv.location_code = 'mscfi')";
+        } elseif(strcasecmp($format, 'BookCD') == 0) {
+            $extraWheres .= "   AND (iv.location_code = 'bcdb'
+                                OR  iv.location_code = 'mcdb')";
+        } elseif(strcasecmp($format, 'CD') == 0) {
+            $extraWheres .= "   AND (iv.location_code = 'bcd'
+                                OR  iv.location_code = 'mcd')";
+        } elseif(strcasecmp($format, 'DVD') == 0) {
+            $extraWheres .= "   AND (iv.location_code = 'bdvd'
+                                OR  iv.location_code = 'bndvd'
+                                OR  iv.location_code = 'mdvd'
+                                OR  iv.location_code = 'mndvd')";
+        } elseif(strcasecmp($format, 'Magazine') == 0) {
+            $extraWheres .= "   AND (iv.location_code = 'bper'
+                                OR  iv.location_code = 'mper')";
+        }
     }
 
     if(isset($_GET['available'])) {
@@ -66,15 +94,6 @@
                     {$extraJoins}
                     WHERE		bv.record_creation_date_gmt IS NOT NULL
                     AND		    iv.item_message_code != 'f'
-                    AND	    	(iv.location_code = 'bfic'
-                        		OR iv.location_code = 'bmyst'
-                        		OR iv.location_code = 'bnba'
-                        		OR iv.location_code = 'broma'
-                        		OR iv.location_code = 'bscfi'
-                        		OR iv.location_code = 'mfic'
-                        		OR iv.location_code = 'mmyst'
-                        		OR iv.location_code = 'mnba'
-                        		OR iv.location_code = 'mscfi')
                     {$extraWheres}
                     GROUP BY	bv.id, bv.bcode2, bv.record_num, brp.best_author, brp.best_title, bv.record_creation_date_gmt
                     ORDER BY	bv.record_creation_date_gmt DESC
