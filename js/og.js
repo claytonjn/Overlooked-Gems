@@ -81,9 +81,9 @@ $('#og-list').empty();
 				var img = new Image();
 				img.onload = function() {
   					if (this.width > 1) {
-  						$('<li><a href="http://encore.wblib.org/iii/encore/record/C__R' + value['bib_record_num'] + '"><img src="' + img.src + '" alt="" /></a><a href="http://encore.wblib.org/iii/encore/record/C__R' + value['bib_record_num'] + '" class="details"><span class="title">' + value['title'] + '</span><span class="author">' + value['author'] + '</span></a></li>').appendTo('#og-list');
+  						$('<li><a href="http://encore.wblib.org/iii/encore/record/C__Rb' + value['bib_record_num'] + '"><img src="' + img.src + '" alt="" /></a><a href="http://encore.wblib.org/iii/encore/record/C__Rb' + value['bib_record_num'] + '" class="details"><span class="title">' + value['title'] + '</span><span class="author">' + value['author'] + '</span></a></li>').appendTo('#og-list');
   					} else {
-  						$('<li class="no-img"><a href="http://encore.wblib.org/iii/encore/record/C__R' + value['bib_record_num']+ '"><span class="title">' + value['title'] + '</span><span class="author">' + value['author'] + '</span></a></li>').appendTo('#og-list');
+  						$('<li class="no-img"><a href="http://encore.wblib.org/iii/encore/record/C__Rb' + value['bib_record_num']+ '"><span class="title">' + value['title'] + '</span><span class="author">' + value['author'] + '</span></a></li>').appendTo('#og-list');
   					}
   				}
 
