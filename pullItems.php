@@ -9,8 +9,6 @@
     //Connect to SierraDNA
 	$sierraDNAconn = db_sierradna();
 
-    //mat_type
-
     //Initialize variables
     $limit = "100";
     $offset = "0";
