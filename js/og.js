@@ -76,25 +76,35 @@ $('#og-list').empty();
 
 			$.each(books_json, function( index, value ) {
 
+				var encoreURL = 'http://encore.wblib.org/iii/encore/record/C__Rb' + value['bib_record_num'];
+				var imgURL = 'http://www.syndetics.com/index.aspx?isbn=' + value['ident'] + '/MC.GIF&client=arfayetteville&type=xw10\" alt=\"\"';
 
-				var img = new Image();
-				img.onload = function() {
+				$('#og-list').append('<li><a href="' + encoreURL + '"><img src="' + imgURL + '" onload="checkCovers(this)" alt="" /></a><a href="' + encoreURL + '" class="details"><span class="title">' + value['title'] + '</span><span class="author">' + value['author'] + '</span></a></li>');
+
+				/*img.onload = function() {
   					if (this.width > 1) {
-  						$('<li><a href="http://encore.wblib.org/iii/encore/record/C__Rb' + value['bib_record_num'] + '"><img src="' + img.src + '" alt="" /></a><a href="http://encore.wblib.org/iii/encore/record/C__Rb' + value['bib_record_num'] + '" class="details"><span class="title">' + value['title'] + '</span><span class="author">' + value['author'] + '</span></a></li>').appendTo('#og-list');
+  						$('#og-list').append('<li class="no-img"><a href="http://encore.wblib.org/iii/encore/record/C__Rb' + value['bib_record_num'] + '" class="details"><span class="title">' + value['title'] + '</span><span class="author">' + value['author'] + '</span></a></li>');
   					} else {
-  						$('<li class="no-img"><a href="http://encore.wblib.org/iii/encore/record/C__Rb' + value['bib_record_num']+ '"><span class="title">' + value['title'] + '</span><span class="author">' + value['author'] + '</span></a></li>').appendTo('#og-list');
+  						$('#og-list').append('<li class="no-img"><a href="http://encore.wblib.org/iii/encore/record/C__Rb' + value['bib_record_num'] + '"><span class="title">' + value['title'] + '</span><span class="author">' + value['author'] + '</span></a></li>');
   					}
   				}
 
 				//img.src = 'http://images.amazon.com/images/P/' + value['ident'] + '.01.TZZZZZZZ.jpg';
 
-				img.src = 'http://www.syndetics.com/index.aspx?isbn=' + value['ident'] + '/MC.GIF&client=arfayetteville&type=xw10\" alt=\"\"';
+				img.src = 'http://www.syndetics.com/index.aspx?isbn=' + value['ident'] + '/MC.GIF&client=arfayetteville&type=xw10\" alt=\"\"'; */
 
 			});
 
 		});
 
+}
 
+function checkCovers(img) {
 
+	if(img.width <= 1) {
+		$(img).parent().parent().addClass("no-img");
+		$(img).parent().next().removeClass("details");
+		$(img).parent().remove();
+	}
 
 }
