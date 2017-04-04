@@ -147,23 +147,21 @@
 
     $sierraResult = pg_query($sierraDNAconn, $pullQuery) or die('Query failed: ' . pg_last_error());
 
-    $json = "[";
+    pg_close($sierraDNAconn);
+
+    $data = [];
 
     while ($row = pg_fetch_assoc($sierraResult)) {
         $row['ident'] = cleanFromSierra("ident", $row['ident']);
         $row['author'] = cleanFromSierra("author", $row['author']);
 		$row['title'] = cleanFromSierra("title", $row['title']);
-        $json .= json_encode($row) . ",";
+        array_push($data, $row);
     }
 
-    $json = substr($json, 0, -1);
-
-    $json .= "]";
+    $json = json_encode($data);
 
     header('Content-Type: application/json');
 
     echo $json;
-
-    pg_close($sierraDNAconn);
 
 ?>
