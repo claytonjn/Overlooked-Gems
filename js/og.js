@@ -1,7 +1,7 @@
 $(document).ready(function(){
 
 
-	query('book','here',0);
+	query('book','y',0);
 
 });
 
@@ -13,20 +13,20 @@ $('#media').find('.dropdown-item').click(function() {
 	$('#media').find('button').text( 'Media: ' + $(this).text() );
 
 
-	query( $(this).data('mat-code'), $('#in_lib').closest('.dropdown').attr('data-val'), $('#patron_id').closest('.dropdown').attr('data-val' ) );
+	query( $(this).data('mat-code'), $('#available').closest('.dropdown').attr('data-val'), $('#patron_id').closest('.dropdown').attr('data-val' ) );
 
 
 
 });
 
 
-$('#in_lib').find('.dropdown-item').click(function() {
+$('#available').find('.dropdown-item').click(function() {
 
-	$(this).closest('.dropdown').attr('data-val', $(this).text().toLowerCase() );
+	$(this).closest('.dropdown').attr('data-val', $(this).data('avail') );
 
-	$('#in_lib').find('button').text( 'You are ' + $(this).text().toLowerCase() + '.');
+	$('#available').find('button').text( 'You are ' + $(this).text().toLowerCase() + '.');
 
-	query( $('#media').closest('.dropdown').attr('data-val'), $(this).text().toLowerCase(), $('#patron_id').closest('.dropdown').attr('data-val' ) );
+	query( $('#media').closest('.dropdown').attr('data-val'), $('#available').closest('.dropdown').attr('data-val'), $('#patron_id').closest('.dropdown').attr('data-val' ) );
 
 
 });
@@ -39,7 +39,7 @@ $('#patron_id').find('.dropdown-item').click(function() {
 
 	$('#patron_id').find('button').text( 'Hello, ' + $(this).text().toLowerCase() + '.');
 
-	query( $('#media').closest('.dropdown').attr('data-val'), $('#in_lib').closest('.dropdown').attr('data-val'), $(this).data('pat-id') );
+	query( $('#media').closest('.dropdown').attr('data-val'), $('#available').closest('.dropdown').attr('data-val'), $(this).data('pat-id') );
 
 
 });
@@ -71,7 +71,7 @@ $('#og-list').empty();
 	$.ajax({
   			method: "GET",
   			url: "pullItems.php?v=1.1",
- 			data: { format: mat, in_lib: loc, patron_id: pat  }
+ 			data: { format: mat, available: loc, patron_id: pat  }
 		})
   		.done(function( books_json ) {
 
