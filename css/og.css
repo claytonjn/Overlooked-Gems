@@ -57,17 +57,50 @@ header .dropdown a.dropdown-item:hover {
 	display: inline-block;
 	margin: 20px;
 	position: relative;
+	z-index: 1;
 	}
 	
-#og-list li div {
+#og-list li img {
+	max-height: 200px;
+	}
+	
+#og-list li.no-img {
+	height: 200px;
+	width: 140px;
+	background-color: #333;
+	display: inline-block;
+	vertical-align: middle;
+	padding: 12px;
+	}
+	
+#og-list li.no-img a {
+	color: #fff;
+	text-decoration: none;
+	}
+		
+	
+#og-list li a.details {
 	display: none;
+	color: #fff;
+	text-decoration: none;
+	}
+
+
+	
+#og-list li a.details span, #og-list li.no-img a span {
+	display: block;
+	margin-bottom: 20px;
 	}
 	
-#og-list li:hover div {
+#og-list li:hover a.details {
 	display: block;
 	position: absolute;
-	bottom: 0;
+	top: 0;
 	left: 0;
-	z-index: 400px;
-	background-color: rgba(255,255,255,0.8);
+	right: 0;
+	bottom: 0;
+	height: 200px;
+	z-index: 100;
+	background-color: rgba(51,51,51,0.9);
+	padding: 12px;
 	}
