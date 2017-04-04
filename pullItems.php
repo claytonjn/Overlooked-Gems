@@ -47,9 +47,6 @@
                                 OR  iv.location_code = 'bndvd'
                                 OR  iv.location_code = 'mdvd'
                                 OR  iv.location_code = 'mndvd')";
-        } elseif(strcasecmp($format, 'Magazine') == 0) {
-            $extraWheres .= "   AND (iv.location_code = 'bper'
-                                OR  iv.location_code = 'mper')";
         }
     }
 
