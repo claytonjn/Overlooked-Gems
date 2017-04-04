@@ -1,7 +1,6 @@
 $(document).ready(function(){
 
-
-	query('book','y',0);
+	query('book','y',null);
 
 });
 
@@ -60,6 +59,7 @@ console.log($('#in-lib  .dropdown-item').text());
 
 function query(mat, loc, pat) {
 
+	if(pat == 'null') { pat = null }
 
 console.log(mat + ' - ' + loc  + ' - ' +pat)
 
@@ -67,11 +67,10 @@ console.log(mat + ' - ' + loc  + ' - ' +pat)
 $('#og-list').empty();
 
 
-
 	$.ajax({
   			method: "GET",
-  			url: "pullItems.php?v=1.1",
- 			data: { format: mat, available: loc, patron_id: pat  }
+  			url: "pullItems.php?v=1.1&limit=10",
+ 			data: { format: mat, available: loc, patron_record_num: pat  }
 		})
   		.done(function( books_json ) {
 
