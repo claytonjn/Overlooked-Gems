@@ -1,5 +1,11 @@
 <?php
 
+	function zolaSignature($key, $secret) {
+		$timestamp = gmdate('U'); // 1200603038
+		$signature = md5($key . $secret . $timestamp);
+		return $signature;
+	}
+
 	function cleanFromSierra($field, $string) {
 		switch ($field) {
 			case "best_author":
