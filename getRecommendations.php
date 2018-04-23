@@ -25,8 +25,5 @@
         }
     }
 
-    echo "<pre>";
-    var_dump($recommendedISBNS);
-    echo "</pre>";
-
+	echo checkSierraForHit($recommendedISBNS, $sierraDNAconn);
 ?>
