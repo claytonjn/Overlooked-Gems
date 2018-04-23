@@ -70,19 +70,35 @@
 
 		$url = "https://api.zo.la/v4/recommendation/rec?action=get&key={$zolaKey}&signature={$signature}&isbn={$isbn}&limit={$limit}&offset={$offset}&preferred_format={$preferred_format}&restrict_format={$restrict_format}";
 
-		// Get cURL resource
-		$curl = curl_init();
-		// Set some options - we are passing in a useragent too here
-		curl_setopt_array($curl, array(
-		    CURLOPT_RETURNTRANSFER => 1,
-		    CURLOPT_URL => $url
-		));
-		// Send the request & save response to $resp
-		$resp = curl_exec($curl);
-		// Close request to clear up some resources
-		curl_close($curl);
+		try {
+		    $ch = curl_init();
 
-		return $resp;
+		    if (FALSE === $ch)
+		        throw new Exception('failed to initialize');
+
+		    curl_setopt($ch, CURLOPT_URL, $url);
+		    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); //TODO: Verify SSL
+
+		    $content = curl_exec($ch);
+
+		    if (FALSE === $content)
+		        throw new Exception(curl_error($ch), curl_errno($ch));
+
+		    // ...process $content now
+		} catch(Exception $e) {
+
+		    trigger_error(sprintf(
+		        'Curl failed with error #%d: %s',
+		        $e->getCode(), $e->getMessage()),
+		        E_USER_ERROR);
+
+		}
+
+		// Close request to clear up some resources
+		curl_close($ch);
+
+		return $content;
 	}
 
 ?>
