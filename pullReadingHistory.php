@@ -33,7 +33,10 @@
 
 	$sierraResult = pg_query($sierraDNAconn, $query) or die('Query failed: ' . pg_last_error());
 
-	while($row=pg_fetch_assoc($sierraResult))
-	{
-		$isbnString=cleanFromSierra("ident", $row['ident']).",";
+	$readISBNS = "";
+	while($row=pg_fetch_assoc($sierraResult)) {
+		$readISBNS .= cleanFromSierra("ident", $row['ident']).",";
 	}
+	rtrim($readISBNS,",");
+
+	echo $readISBNS;
