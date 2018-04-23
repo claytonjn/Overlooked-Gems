@@ -37,5 +37,5 @@
 							
 	while($row=pg_fetch_assoc($sierraResult))
 	{
-		echo cleanFromSierra("ident", $row['ident'])."<br>";
+		$isbnString=cleanFromSierra("ident", $row['ident']).",";
 	}
