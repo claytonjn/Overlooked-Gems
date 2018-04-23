@@ -2,7 +2,7 @@
 
 	function cleanFromSierra($field, $string) {
 		switch ($field) {
-			case "author":
+			case "best_author":
 				$pattern = "/([^\d,\.]*,?[^\d,\.]*)(?:,|\.)?.*/";
 				$replacement = "$1";
 				break;
