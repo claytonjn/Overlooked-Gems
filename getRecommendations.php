@@ -13,8 +13,20 @@
 	$sierraDNAconn = db_sierradna();
 
     $zolaSignature = zolaSignature();
-	$readISBN = pullReadingHistory('1076015', $sierraDNAconn);
+	$readISBN = pullReadingHistory('1124032', $sierraDNAconn);
 
-    echo zolaRecommendations($zolaSignature, $readISBN);
+    $zolaRecommendations =  zolaRecommendations($zolaSignature, $readISBN, NULL, NULL, "BB,BC,BH,WW,BK,AC", "TRUE");
+    $recommendations = json_decode($zolaRecommendations, true)['data']['list'];
+
+    $recommendedISBNS = array();
+    foreach ($recommendations as $recommendation) {
+        foreach($recommendation['versions'] as $versions) {
+            array_push($recommendedISBNS, $versions['isbn']);
+        }
+    }
+
+    echo "<pre>";
+    var_dump($recommendedISBNS);
+    echo "</pre>";
 
 ?>
