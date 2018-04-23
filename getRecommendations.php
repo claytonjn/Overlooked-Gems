@@ -12,8 +12,9 @@
 	//Connect to SierraDNA
 	$sierraDNAconn = db_sierradna();
 
-	echo pullReadingHistory('1124032', $sierraDNAconn);
-    echo "<br>";
-    echo zolaSignature();
+    $zolaSignature = zolaSignature();
+	$readISBN = pullReadingHistory('1076015', $sierraDNAconn);
+
+    echo zolaRecommendations($zolaSignature, $readISBN);
 
 ?>

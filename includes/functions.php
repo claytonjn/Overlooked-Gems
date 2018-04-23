@@ -1,13 +1,5 @@
 <?php
 
-	function zolaSignature() {
-		include "constants.php";
-
-		$timestamp = gmdate('U'); // 1200603038
-		$signature = md5($zolaKey . $zolaSecret . $timestamp);
-		return $signature;
-	}
-
 	function cleanFromSierra($field, $string) {
 		switch ($field) {
 			case "best_author":
@@ -52,7 +44,9 @@
 								OR	brp.material_code = 'i'	/*	Book on Tape (15)	*/
 								OR	brp.material_code = 'p'	/*	Book on MP3 (23)	*/
 								OR	brp.material_code = 'z'	/*	eBook (24)			*/
-								OR	brp.material_code = '$'	/*	Rental (25)			*/	)";
+								OR	brp.material_code = '$'	/*	Rental (25)			*/	)
+					ORDER BY	RH.checkout_gmt DESC
+					LIMIT		100;";
 
 		$sierraResult = pg_query($sierraDNAconn, $query) or die('Query failed: ' . pg_last_error());
 
@@ -61,6 +55,34 @@
 			$readISBNS .= cleanFromSierra("ident", $row['ident']).",";
 		}
 		return rtrim($readISBNS,",");
+	}
+
+	function zolaSignature() {
+		include "constants.php";
+
+		$timestamp = gmdate('U'); // 1200603038
+		$signature = md5($zolaKey . $zolaSecret . $timestamp);
+		return $signature;
+	}
+
+	function zolaRecommendations($signature, $isbn, $limit = NULL, $offset = NULL, $preferred_format = NULL, $restrict_format = NULL) {
+		include "constants.php";
+
+		$url = "https://api.zo.la/v4/recommendation/rec?action=get&key={$zolaKey}&signature={$signature}&isbn={$isbn}&limit={$limit}&offset={$offset}&preferred_format={$preferred_format}&restrict_format={$restrict_format}";
+
+		// Get cURL resource
+		$curl = curl_init();
+		// Set some options - we are passing in a useragent too here
+		curl_setopt_array($curl, array(
+		    CURLOPT_RETURNTRANSFER => 1,
+		    CURLOPT_URL => $url
+		));
+		// Send the request & save response to $resp
+		$resp = curl_exec($curl);
+		// Close request to clear up some resources
+		curl_close($curl);
+
+		return $resp;
 	}
 
 ?>
