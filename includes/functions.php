@@ -26,6 +26,42 @@
 		return $string;
 	}
 
+	function prepareIdentTempTable($sierraDNAconn) {
+
+		$query =	"	DROP TABLE IF EXISTS varfields;";
+		$query .=	"	CREATE TEMP TABLE varfields
+						(
+							record_id bigint,
+							field_content varchar(20001)
+						);";
+		$query .=	"	INSERT INTO	varfields
+						SELECT 		record_id, SUBSTRING(field_content from 0 for 16) as field_content
+						FROM		sierra_view.varfield
+						WHERE		marc_tag = '020'
+						AND			varfield_type_code = 'i';";
+
+		return pg_query($sierraDNAconn, $query) or die('Query failed: ' . pg_last_error());
+
+	}
+
+	function prepareReadingHistoryTempTable($pnumber, $sierraDNAconn) {
+
+		$query =	"	DROP TABLE IF EXISTS reading_histories;";
+		$query .=	"	CREATE TEMP TABLE reading_histories
+						(
+							bib_record_metadata_id bigint
+						);";
+		$query .=	"	INSERT INTO reading_histories
+						SELECT		bib_record_metadata_id
+						FROM		sierra_view.reading_history rh
+						LEFT JOIN	sierra_view.patron_view pv
+									ON rh.patron_record_metadata_id = pv.id
+						WHERE		pv.record_num = '{$pnumber}';";
+
+		return pg_query($sierraDNAconn, $query) or die('Query failed: ' . pg_last_error());
+
+	}
+
 	function pullReadingHistory($pnumber, $sierraDNAconn) {
 		//Pull books from patron's reading history
 		$query = "	SELECT		(	SELECT 		DISTINCT ON (v.record_id) v.field_content
@@ -33,11 +69,10 @@
 									WHERE 		v.record_id = RH.bib_record_metadata_id
 									AND			v.marc_tag = '020'
 									ORDER BY	v.record_id, v.marc_tag DESC, v.occ_num ASC	) AS ident
-					FROM		sierra_view.reading_history AS RH
-					LEFT JOIN	sierra_view.patron_view ON rh.patron_record_metadata_id = patron_view.id
-					LEFT JOIN	sierra_view.bib_record_property AS BRP ON RH.bib_record_metadata_id = BRP.bib_record_id
-					WHERE		patron_view.record_num = '{$pnumber}'
-					AND			(	brp.material_code = 'b'	/*	Book on CD (5)		*/
+					FROM		reading_histories rh
+					LEFT JOIN	sierra_view.bib_record_property brp
+								ON rh.bib_record_metadata_id = brp.bib_record_id
+					WHERE		(	brp.material_code = 'b'	/*	Book on CD (5)		*/
 								OR	brp.material_code = 'a'	/*	Book (7)			*/
 								OR	brp.material_code = 'l'	/*	Large Print (10)	*/
 								OR	brp.material_code = 'k' /*	eAudio (13)			*/
@@ -55,42 +90,28 @@
 		return $readISBNS;
 	}
 
-	function checkSierraForHit($recommendedISBNS, $pnumber, $sierraDNAconn) {
+	function checkSierraForHit($recommendedISBNS, $sierraDNAconn) {
 
-		$query =	"	DROP TABLE IF EXISTS varfields;";
-		$query .=	"	CREATE TEMP TABLE varfields
-						(
-							record_id bigint,
-							field_content varchar(20001)
-						);";
-		$query .=	"	INSERT INTO	varfields
-						SELECT 		record_id, field_content
-						FROM		sierra_view.varfield
-						WHERE		marc_tag = '020'
-						AND			varfield_type_code = 'i';";
-		$query .=	"	DROP TABLE IF EXISTS bibRecords;";
-		$query .=	"	DROP TABLE IF EXISTS reading_histories;";
-		$query .=	"	CREATE TEMP TABLE reading_histories
-						(
-							bib_record_metadata_id bigint
-						);";
-		$query .=	"	INSERT INTO reading_histories
-						SELECT		bib_record_metadata_id
-						FROM		sierra_view.reading_history rh
-						LEFT JOIN	sierra_view.patron_view pv
-									ON rh.patron_record_metadata_id = pv.id
-						WHERE		pv.record_num = '{$pnumber}';";
-		$query .=	"	CREATE TEMP TABLE bibRecords
-						(
-							record_id bigint
-						);";
-		$query .=	"	INSERT INTO bibRecords
-						SELECT		v.record_id
-						FROM		varfields v
+		$query = "	DROP TABLE IF EXISTS recommendations;";
+		$query .= "	CREATE TEMP TABLE recommendations
+					(
+						ident varchar(15)
+					);";
+		$query .= "	INSERT INTO recommendations (ident) VALUES ";
+		foreach($recommendedISBNS as $isbn) {
+			$query .= "('|a{$isbn}'), ";
+		}
+		$query = rtrim($query,", ") . ";";
+		$query .=	"	SELECT		bv.record_num as bib_num
+		 				FROM		varfields v
+						INNER JOIN	recommendations r
+									ON v.field_content = r.ident
 						LEFT JOIN	reading_histories rh
 									ON v.record_id = rh.bib_record_metadata_id
 						LEFT JOIN	sierra_view.bib_record_property brp
 									ON v.record_id = brp.bib_record_id
+						LEFT JOIN	sierra_view.bib_view bv
+									ON v.record_id = bv.id
 						LEFT JOIN	sierra_view.bib_record_item_record_link brirl
 									ON v.record_id = brirl.bib_record_id
 						LEFT JOIN	sierra_view.item_view iv
@@ -101,14 +122,7 @@
 						AND			brp.material_code = 'a'	/*	Book (7)	*/
 						AND			iv.item_status_code = '-'
 						AND			c.item_record_id IS NULL
-						AND			";
-		$query .=	"(";
-		foreach($recommendedISBNS as $isbn) {
-			$query .= "v.field_content LIKE '%{$isbn}%' OR ";
-		}
-		$query = rtrim($query," OR ") . ")";
-		$query .=	"	GROUP BY	v.record_id;";
-		$query .= "	SELECT * FROM bibRecords";
+						LIMIT		1;";
 
 		$sierraResult = pg_query($sierraDNAconn, $query) or die('Query failed: ' . pg_last_error());
 		return $sierraResult;
@@ -157,7 +171,7 @@
 
 		return $content;
 	}
-	
+
 	function placeHold($token, $id, $body) {
 		include "constants.php";
 

@@ -8,19 +8,38 @@
 
 	//**This include file establish the API connection
 	include_once "./includes/constants.php";
-	
+
 	//**This include file includes functions, such as pipe cleaner
 	include_once ("./includes/functions.php");
 
 	//Connect to SierraDNA
 	$sierraDNAconn = db_sierradna();
-	
+
 	//GET THIS INFORMATION FROM SENDING PAGE USING POST OR GET DATA
-	$pnumber = '1051149';
+	$pnumber = '1124032';
 	$pickupLocation = 'west';
-	
+
 
     $zolaSignature = zolaSignature();
+
+	try {
+		$tempTablesResult = prepareIdentTempTable($sierraDNAconn);
+		if ($tempTablesResult === FALSE)
+			throw new Exception('failed to create ident temp table');
+	} catch(Exception $e) {
+		echo $e;
+	}
+
+	//TODO: loop through patrons here
+
+	try {
+		$tempTablesResult = prepareReadingHistoryTempTable($pnumber, $sierraDNAconn);
+		if ($tempTablesResult === FALSE)
+			throw new Exception('failed to create reading history temp table');
+	} catch(Exception $e) {
+		echo $e;
+	}
+
 	$readISBNS = pullReadingHistory($pnumber, $sierraDNAconn);
 	shuffle($readISBNS);
 
@@ -40,17 +59,17 @@
 		    }
 
 			shuffle($recommendedISBNS);
-			$sierraResult = checkSierraForHit($recommendedISBNS, $pnumber, $sierraDNAconn);
+			$sierraResult = checkSierraForHit($recommendedISBNS, $sierraDNAconn);
 
 			if(pg_num_rows($sierraResult) > 0) {
 				while ($row = pg_fetch_assoc($sierraResult)) {
-					echo $row['record_id']."<br>";
+					echo $row['bib_num']."<br>";
 				}
 				exit; //got a result, don't keep trying
 			}
 		}
 	}
-	
+
 	/*
 	//Get a token for using the API to place the hold
 	//Token for Sierra API access (get new token for each bib, otherwise it might timeout)
@@ -60,7 +79,7 @@
 	$data = array("recordType" => "b", "recordNumber" => intval($bib['BNumber']), "pickupLocation" => $pickupLocation);
 	$data_string = json_encode($data);
 	$holdResult = placeHold($token, $pnumber, $data_string);
-	
+
 	if($holdResult == "") {
 		$holdsPlaced ++;
 	} else {
