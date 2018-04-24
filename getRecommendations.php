@@ -3,13 +3,13 @@
 	ini_set ("display_errors", "1");
 	error_reporting(E_ALL);
 
-	//**This include file establishes the database connections
+	//Database connections
 	include_once ("./includes/db_connect.inc");
 
-	//**This include file establish the API connection
+	//Constants for API connections
 	include_once "./includes/constants.php";
 
-	//**This include file includes functions, such as pipe cleaner
+	//General functions (data cleanup, API calls, etc)
 	include_once ("./includes/functions.php");
 
 	//Connect to SierraDNA
@@ -19,8 +19,8 @@
 	$pnumber = '1124032';
 	$pickupLocation = 'west';
 
-
-    $zolaSignature = zolaSignature();
+	//Generature signature for Zola API
+	$zolaSignature = zolaSignature();
 
 	try {
 		$tempTablesResult = prepareIdentTempTable($sierraDNAconn);
@@ -62,32 +62,19 @@
 			$sierraResult = checkSierraForHit($recommendedISBNS, $sierraDNAconn);
 
 			if(pg_num_rows($sierraResult) > 0) {
-				while ($row = pg_fetch_assoc($sierraResult)) {
-					echo $row['bib_num']."<br>";
+				$row = pg_fetch_assoc($sierraResult);
+				//Token for Sierra API access (get new token for each user, otherwise it might timeout)
+				$token = getAccessToken();
+
+				//Place the hold on the item for the patron
+				$data = array("recordType" => "b", "recordNumber" => intval($row['bib_num']), "pickupLocation" => $pickupLocation);
+				$data_string = json_encode($data);
+				$holdResult = placeHold($token, $pnumber, $data_string);
+				if($holdResult == "") {
+					exit; //got a result, hold sucessfullyplaced, don't keep trying
 				}
-				exit; //got a result, don't keep trying
 			}
 		}
 	}
-
-	/*
-	//Get a token for using the API to place the hold
-	//Token for Sierra API access (get new token for each bib, otherwise it might timeout)
-	$token = getAccessToken();
-
-	//Place the hold on the item for the patron
-	$data = array("recordType" => "b", "recordNumber" => intval($bib['BNumber']), "pickupLocation" => $pickupLocation);
-	$data_string = json_encode($data);
-	$holdResult = placeHold($token, $pnumber, $data_string);
-
-	if($holdResult == "") {
-		$holdsPlaced ++;
-	} else {
-		$holdResult = json_decode($holdResult, true);
-		if($holdResult['description'] != "XCirc error : Request denied - already on hold for or checked out to you.") {
-			$failures .= $pnumber.."(".$pickupLocation.")|";
-		}
-	}
-	*/
 
 ?>

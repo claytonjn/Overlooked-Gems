@@ -118,10 +118,14 @@
 									ON brirl.item_record_id = iv.id
 						LEFT JOIN	sierra_view.checkout c
 									ON brirl.item_record_id = c.item_record_id
+						LEFT JOIN	sierra_view.hold h
+									ON 	(	v.record_id = h.record_id
+										OR	brirl.item_record_id = h.record_id	)
 						WHERE		rh.bib_record_metadata_id IS NULL
 						AND			brp.material_code = 'a'	/*	Book (7)	*/
 						AND			iv.item_status_code = '-'
 						AND			c.item_record_id IS NULL
+						AND			h.record_id IS NULL
 						LIMIT		1;";
 
 		$sierraResult = pg_query($sierraDNAconn, $query) or die('Query failed: ' . pg_last_error());
@@ -170,6 +174,50 @@
 		curl_close($ch);
 
 		return $content;
+	}
+
+	function getAccessToken() {
+		include "constants.php";
+
+		// Get cURL resource
+		$curl = curl_init();
+		curl_setopt_array($curl, array(
+				CURLOPT_POST => TRUE,
+				CURLOPT_RETURNTRANSFER => 1,
+				CURLOPT_SSL_VERIFYHOST => 0,
+				CURLOPT_SSL_VERIFYPEER => 0,
+				CURLOPT_URL => "{$apiurl}token",
+				CURLOPT_HTTPHEADER => array(
+						'Host: '.$hosturl,
+						'Authorization: Basic '.$encauth,
+						'Content-Type: application/x-www-form-urlencoded'
+				),
+				CURLOPT_POSTFIELDS => "grant_type=client_credentials"
+		));
+
+				// Send the request & save response to $resp
+		$resp = curl_exec($curl);
+
+		//Check if CURL REQUEST FAILED TO PROCESS
+		$err = NULL;
+		if($resp === FALSE)
+			$err = curl_error($curl);
+
+		// Close request to clear up some resources
+		curl_close($curl);
+
+		if($err)
+			return $err;
+		else {
+			$tokenData = json_decode($resp, true);
+			if(is_null($tokenData)) {
+				echo "Could not retrieve token from server.<br>";
+				return false;
+			}
+
+			return $tokenData["access_token"];	//Sends back Token
+		}
+
 	}
 
 	function placeHold($token, $id, $body) {
