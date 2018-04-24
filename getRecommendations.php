@@ -6,13 +6,19 @@
 	//**This include file establishes the database connections
 	include_once ("./includes/db_connect.inc");
 
+	//**This include file establish the API connection
+	include_once "./includes/constants.php";
+	
 	//**This include file includes functions, such as pipe cleaner
 	include_once ("./includes/functions.php");
 
 	//Connect to SierraDNA
 	$sierraDNAconn = db_sierradna();
-
+	
+	//GET THIS INFORMATION FROM SENDING PAGE USING POST OR GET DATA
 	$pnumber = '1051149';
+	$pickupLocation = 'west';
+	
 
     $zolaSignature = zolaSignature();
 	$readISBNS = pullReadingHistory($pnumber, $sierraDNAconn);
@@ -44,5 +50,25 @@
 			}
 		}
 	}
+	
+	/*
+	//Get a token for using the API to place the hold
+	//Token for Sierra API access (get new token for each bib, otherwise it might timeout)
+	$token = getAccessToken();
+
+	//Place the hold on the item for the patron
+	$data = array("recordType" => "b", "recordNumber" => intval($bib['BNumber']), "pickupLocation" => $pickupLocation);
+	$data_string = json_encode($data);
+	$holdResult = placeHold($token, $pnumber, $data_string);
+	
+	if($holdResult == "") {
+		$holdsPlaced ++;
+	} else {
+		$holdResult = json_decode($holdResult, true);
+		if($holdResult['description'] != "XCirc error : Request denied - already on hold for or checked out to you.") {
+			$failures .= $pnumber.."(".$pickupLocation.")|";
+		}
+	}
+	*/
 
 ?>

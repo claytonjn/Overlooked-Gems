@@ -157,5 +157,44 @@
 
 		return $content;
 	}
+	
+	function placeHold($token, $id, $body) {
+		include "constants.php";
+
+		// Get cURL resource
+		$curl = curl_init();
+		// Set some options - we are passing in a useragent too here
+		curl_setopt_array($curl, array(
+			CURLOPT_CUSTOMREQUEST => 'POST',
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_SSL_VERIFYHOST=> 0,
+			CURLOPT_SSL_VERIFYPEER=> 0,
+			CURLOPT_URL => "{$apiurl}patrons/{$id}/holds/requests",
+			CURLOPT_HTTPHEADER => array(
+					'Host: '.$hosturl,
+					'Authorization: Bearer '.$token,
+					'Content-Type: application/json',
+					'Content-Length: ' . strlen($body)
+			),
+			CURLOPT_POSTFIELDS => $body
+		));
+		// Send the request & save response to $resp
+		$resp = curl_exec($curl);
+
+		//Check if CURL REQUEST FAILED TO PROCESS
+		$err = NULL;
+		if($resp === FALSE)
+			$err = curl_error($curl);
+
+		// Close request to clear up some resources
+		curl_close($curl);
+
+		if($err)
+			return $err;
+		else
+			return $resp;
+
+	}
+
 
 ?>
