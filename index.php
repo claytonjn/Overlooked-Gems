@@ -18,64 +18,65 @@
 	//Connect to MySQL
 	$overlookedGemsLink = db_overlooked_gems() or die ("Cannot connect to server");
 		
-	//GET THIS INFORMATION FROM SENDING PAGE USING POST OR GET DATA
-	$pnumber = '11000024032';
-	$pickup_location = 'west';
-	
+	//Check Session Variables
+	if(isset($_POST['Logout']))
+	{
+		$_SESSION['LoggedIn']=0;
+		$_SESSION['FirstName']="";
+		$_SESSION['ParentID']="";
+		
+	}
 
-	if(isset($_POST['step']))
-		$step = $_POST['step'];
-	else
-		$step = 1;
+	//Check Session Variables
+	if(!isset($_SESSION['LoggedIn']))
+		$_SESSION['LoggedIn']=0;
 	
-	if(isset($_POST['lastname']))
-		$lastname = $_POST['lastname'];
-	elseif(isset($_GET['lastname']))
-		$lastname = $_GET['lastname'];
+	//Checking for Errors
+	if (isset($_GET['lastname']))
+		$lastname = strtolower($_GET['lastname']);
 	else
 		$lastname = "";
-	
-	if(isset($_POST['barcode']))
-		$barcode = $_POST['barcode'];
-	elseif(isset($_GET['barcode']))
-		$barcode = $_GET['barcode'];
+
+	if (isset($_GET['cardno']))
+		$cardno = $_GET['cardno'];
 	else
-		$barcode = "";
-	
+		$cardno = "";
+
 	if(isset($_GET['error']))
 		$error = "Sorry, you were not found in the system.<br>";
 	else
 		$error = "";
 	
-	if($step==1) {
+	echo <<< Text
 		
-		echo <<< Text
-			
-			<div id="header">
-				Sign-up Form
-			</div>
-			
-			<div id="FormInfo">
-				<span style="color:#C00;">{$error}</span>
-				<form action="" method="POST" name="SIGNUP">
-					<input type="hidden" value="2" name="step"
-					<div id="textbox">
-						Last Name:
-						<input type="text" name="lastname" value="{$lastname}">
-					</div>
-					<div id="textbox">
-						Barcode:
-						<input type="password" name="barcode" value="{$barcode}">
-					</div>
-					<div id="textbox">
-						<input type="submit" name="submit">
-					</div>
-				</form>
-			</div>
-			
+		<div id="header">
+			Sign-up Form
+		</div>
+		
+		<div id="FormInfo">
+			<span style="color:#C00;">{$error}</span>
+			<form action="./process_login.php" method="POST" name="SIGNUP">
+				<div id="textbox">
+					Last Name:
+					<input type="text" name="lastname" value="{$lastname}">
+				</div>
+				<div id="textbox">
+					Barcode:
+					<input type="password" name="cardno" value="{$cardno}">
+				</div>
+				<div id="textbox">
+					<input type="submit" name="submit">
+				</div>
+			</form>
+		</div>
+		
 		
 Text;
-	}
+	
+	
+	
+	die;
+	/*
 	else if($step==2) {
 		
 		$patronQuery = "SELECT 		PRF.last_name, PV.record_num, PV.id
@@ -193,6 +194,6 @@ Frequency;
 		
 		echo $next_trigger;
 	}
-	
+	*/
 	
 ?>
