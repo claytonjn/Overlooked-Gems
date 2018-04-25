@@ -15,6 +15,7 @@
 	//Generature signature for Zola API
 	$zolaSignature = zolaSignature();
 
+	//Create temp-table with ISBNs for efficiency
 	try {
 		$tempTablesResult = prepareIdentTempTable($sierraDNAconn);
 		if ($tempTablesResult === FALSE)
@@ -36,6 +37,7 @@
 	set_time_limit(600+(mysqli_num_rows($patronsResult) * 6)); //Allow time for processing all items
 
 	while($patron = mysqli_fetch_assoc($patronsResult)) {
+		//Create temp-table with patron's reading history for efficiency
 		try {
 			$tempTablesResult = prepareReadingHistoryTempTable($patron['pnumber'], $sierraDNAconn);
 			if ($tempTablesResult === FALSE)
@@ -44,11 +46,19 @@
 			echo $e;
 		}
 
-		$readISBNS = pullReadingHistory($patron['pnumber'], $sierraDNAconn);
-		shuffle($readISBNS);
+		//Update reading history in MySQL (to ensure we have current data)
+		try {
+			$importResult = importReadingHistory($patron['pnumber'], $sierraDNAconn, $overlookedGemsLink);
+			if ($importResult === FALSE)
+				throw new Exception('failed to import reading history');
+		} catch(Exception $e) {
+			echo $e;
+		}
 
-		foreach($readISBNS as $isbn) {
-			$zolaRecommendations = zolaRecommendations($zolaSignature, $isbn, 100, NULL, "BB,BC,BH,WW,BK,AC", "TRUE");
+		$prioritizedISBNS = pullReadingHistory($patron['pnumber'], $overlookedGemsLink, $sierraDNAconn);
+
+		while($isbn=pg_fetch_assoc($prioritizedISBNS)) {
+			$zolaRecommendations = zolaRecommendations($zolaSignature, cleanFromSierra("ident", $isbn['ident']), 100, NULL, "BB,BC,BH,WW,BK,AC", "TRUE");
 			$recommendations = json_decode($zolaRecommendations, true);
 			if($recommendations['status'] == "success") {
 				$recommendations = $recommendations['data']['list'];
@@ -62,7 +72,6 @@
 			        }
 			    }
 
-				shuffle($recommendedISBNS);
 				$sierraResult = checkSierraForHit($recommendedISBNS, $sierraDNAconn);
 
 				if(pg_num_rows($sierraResult) > 0) {
@@ -95,5 +104,7 @@
 	}
 
 	pg_close($sierraDNAconn);
+	mysqli_close($overlookedGemsLink);
+	unset($overlookedGemsLink);
 
 ?>
