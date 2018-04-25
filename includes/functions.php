@@ -54,11 +54,12 @@
 							checkout_gmt timestamp
 						);";
 		$query .=	"	INSERT INTO reading_histories
-						SELECT		bib_record_metadata_id, checkout_gmt
+						SELECT		bib_record_metadata_id, MAX(checkout_gmt)
 						FROM		sierra_view.reading_history rh
 						LEFT JOIN	sierra_view.patron_view pv
 									ON rh.patron_record_metadata_id = pv.id
-						WHERE		pv.record_num = '{$pnumber}';";
+						WHERE		pv.record_num = '{$pnumber}'
+						GROUP BY	bib_record_metadata_id;";
 
 		return pg_query($sierraDNAconn, $query) or die('Query failed: ' . pg_last_error());
 
