@@ -2,6 +2,9 @@
 
 	ini_set ("display_errors", "1");
 	error_reporting(E_ALL);
+	
+	//Keep login Information
+	session_start();
 
 	//**This include file establishes the database connections
 	include_once ("./includes/db_connect.inc");
@@ -12,15 +15,18 @@
 	//Connect to SierraDNA
 	$sierraDNAconn = db_sierradna();
 	
+	//Connect to MySQL
+	$overlookedGemsLink = db_overlooked_gems() or die ("Cannot connect to server");
+		
 	//GET THIS INFORMATION FROM SENDING PAGE USING POST OR GET DATA
-	$pnumber = '1051149';
-	$pickupLocation = 'west';
+	$pnumber = '11000024032';
+	$pickup_location = 'west';
 	
 
-	if(isset($_POST['loginBox']))
-		$loginBox = $_POST['loginBox'];
+	if(isset($_POST['step']))
+		$step = $_POST['step'];
 	else
-		$loginBox = 1;
+		$step = 1;
 	
 	if(isset($_POST['lastname']))
 		$lastname = $_POST['lastname'];
@@ -41,7 +47,7 @@
 	else
 		$error = "";
 	
-	if($loginBox==1) {
+	if($step==1) {
 		
 		echo <<< Text
 			
@@ -52,7 +58,7 @@
 			<div id="FormInfo">
 				<span style="color:#C00;">{$error}</span>
 				<form action="" method="POST" name="SIGNUP">
-					<input type="hidden" value="0" name="loginBox"
+					<input type="hidden" value="2" name="step"
 					<div id="textbox">
 						Last Name:
 						<input type="text" name="lastname" value="{$lastname}">
@@ -70,7 +76,7 @@
 		
 Text;
 	}
-	else if($loginBox==0) {
+	else if($step==2) {
 		
 		$patronQuery = "SELECT 		PRF.last_name, PV.record_num, PV.id
 						FROM 		sierra_view.varfield AS V
@@ -94,7 +100,13 @@ Text;
 			
 			//Grab the lastname from the PG Query
 			$pgLastname = strtolower(str_replace( "*", "", $row['last_name'] ));
+			
+			//Set the Pnumber from the PG Query
+			$pnumber = $row['record_num'];
 
+			//Set Session Variables
+			$_SESSION['PNumber']=$pnumber;
+			
 			//Compare names to see if login is valid
 			if($pgLastname != $lastname)				
 			{
@@ -116,30 +128,34 @@ Text;
 				if($rhRow['rhbool']=='f') {
 					echo <<< NoReadingHistory
 						In order to use this service, you must have your reading history turned on.<br>
-						To do this, please login to "My Account", select Reading History and "Opt In".<br>
-						You can continue setting up your account, but after 3 attempts with Reading History<br>
-						turned off, your account will be removed and you will need to set it up again.				
+						To do this, please login to "My Account", select Reading History and "Opt In".		
 NoReadingHistory;
 				}
 				elseif($rhRow['rhbool']=='t') {
 					echo <<< Frequency
 						<div id="FormInfo">
 							<form action="" method="POST" name="FrequencyForm">
-								<input type="hidden" value="0" name="loginBox"
+								<input type="hidden" value="3" name="step"
 								<div id="Select">
 									Pick your hold Frequency:
 									<select name="frequency">
-										<option value=''></option>
-										<option value=''>Weekly</option>
-										<option value=''>Bi-weekly</option>
-										<option value=''>Monthly</option>
-										<option value=''>Bi-monthly</option>
-										<option value=''>Quarterly</option>
-										<option value=''>Bi-annually</option>
-										<option value=''>Annually</option>
+										<option value='weekly'>Weekly</option>
+										<option value='biweekly'>Bi-weekly</option>
+										<option value='monthly' SELECTED>Monthly</option>
+										<option value='bimonthly'>Bi-monthly</option>
+										<option value='quarterly'>Quarterly</option>
+										<option value='biannually'>Bi-annually</option>
+										<option value='annually'>Annually</option>
 									</select>
 								</div>
-								
+								<div id="Select">
+									Select your pick up location:
+									<select name="pickup_location">
+										<option value='drive'>Main Drive-up</option>
+										<option value='west' SELECTED>Main Lobby</option>
+										<option value='wacr'>Westacres</option>
+									</select>
+								</div>
 								<div id="textbox">
 									<input type="submit" name="submit">
 								</div>
@@ -147,11 +163,35 @@ NoReadingHistory;
 						</div>
 Frequency;
 				}
-					
-				
-				
 			}
 		}
+	}
+	else if($step==3) {
+		
+		if(isset($_POST['frequency']))
+			$frequency = $_POST['frequency'];
+		else
+			$frequency = "monthly";
+		
+		if(isset($_POST['pickup_location']))
+			$pickup_location = $_POST['pickup_location'];
+		else
+			$pickup_location = "west";
+		
+		date_default_timezone_set('America/Detroit');
+		$next_trigger=date("Y-m-d",strtotime("tomorrow"));
+		
+		
+		$query = "	INSERT INTO 2018_patrons (pnumber, pickup_location, frequency, next_trigger)
+					 VALUES ('{$_SESSION['PNumber']}', '{$pickup_location}', '{$frequency}', '{$next_trigger}')
+					 ON DUPLICATE KEY UPDATE
+					 pickup_location	= '{$pickup_location}',
+					 frequency 			= '{$frequency}',
+					 next_trigger		= '{$next_trigger}';";
+		
+		$result = mysqli_query($overlookedGemsLink, $query) or die(mysqli_error($overlookedGemsLink));
+		
+		echo $next_trigger;
 	}
 	
 	
