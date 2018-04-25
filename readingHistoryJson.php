@@ -41,7 +41,9 @@
                     WHERE   pnumber = {$pnumber}";
 
     if(isset($_GET['filter'])) {
-        $mysqlQuery .= "    AND rating = {$_GET['filter']}";
+		if($_GET['filter'] != "") {
+			$mysqlQuery .= "    AND rating = {$_GET['filter']}";
+		}
     }
 
     $mysqlResult = mysqli_query($overlookedGemsLink, $mysqlQuery) or die(mysqli_error($overlookedGemsLink));
@@ -91,16 +93,18 @@
                                         ON ph.bib_record_metadata_id = rh.bib_record_metadata_id
                             ORDER BY    ";
         if(isset($_GET['sort'])) {
-            $sierraQuery .= "ph.rating ";
-            switch ($_GET['sort']) {
-                case -1:
-                    $sierraQuery .= "ASC";
-                    break;
-                case 1:
-                    $sierraQuery .= "DESC";
-                    break;
-            }
-            $sierraQuery .= ", ";
+			if($_GET['sort']!= "") {
+				$sierraQuery .= "ph.rating ";
+				switch ($_GET['sort']) {
+					case -1:
+						$sierraQuery .= "ASC";
+						break;
+					case 1:
+						$sierraQuery .= "DESC";
+						break;
+				}
+				$sierraQuery .= ", ";
+			}
         }
         $sierraQuery .= "rh.checkout_gmt DESC;";
 
