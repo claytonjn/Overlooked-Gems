@@ -41,8 +41,9 @@
                     WHERE   pnumber = {$pnumber}";
 
     if(isset($_GET['filter'])) {
-		if($_GET['filter'] != "") {
-			$mysqlQuery .= "    AND rating = {$_GET['filter']}";
+        $filter = $_GET['filter'];
+		if($filter != "") {
+			$mysqlQuery .= "    AND rating = {$filter}";
 		}
     }
 
@@ -93,9 +94,10 @@
                                         ON ph.bib_record_metadata_id = rh.bib_record_metadata_id
                             ORDER BY    ";
         if(isset($_GET['sort'])) {
-			if($_GET['sort']!= "") {
+            $sort = $_GET['sort'];
+			if($sort != "") {
 				$sierraQuery .= "ph.rating ";
-				switch ($_GET['sort']) {
+				switch ($sort) {
 					case -1:
 						$sierraQuery .= "ASC";
 						break;
