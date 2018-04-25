@@ -50,10 +50,11 @@
 		$query =	"	DROP TABLE IF EXISTS reading_histories;";
 		$query .=	"	CREATE TEMP TABLE reading_histories
 						(
-							bib_record_metadata_id bigint
+							bib_record_metadata_id bigint,
+							checkout_gmt timestamp
 						);";
 		$query .=	"	INSERT INTO reading_histories
-						SELECT		bib_record_metadata_id
+						SELECT		bib_record_metadata_id, checkout_gmt
 						FROM		sierra_view.reading_history rh
 						LEFT JOIN	sierra_view.patron_view pv
 									ON rh.patron_record_metadata_id = pv.id

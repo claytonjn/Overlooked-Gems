@@ -11,7 +11,7 @@ $('#frequency').find('.dropdown-item').click(function() {
 
 	$('#frequency').find('button').text($(this).text() );
 
-	
+
 	updatePreferences( $(this).data('frequency'), $('#patnum').attr('data-val'), $('#pickup_location').attr('data-val'), "frequency" );
 
 
@@ -25,7 +25,7 @@ $('#pickup_location').find('.dropdown-item').click(function() {
 
 	$('#pickup_location').find('button').text( $(this).text());
 
-	
+
 	updatePreferences( $('#frequency').attr('data-val'), $('#patnum').attr('data-val'), $(this).data('pickup'), "pickup_location" );
 
 
@@ -35,8 +35,8 @@ $('#pickup_location').find('.dropdown-item').click(function() {
 
 
 $('#patron_id').find('.dropdown-item').click(function() {
-	
-	
+
+
 	$(this).closest('.dropdown').attr('data-val', $(this).data('pat-id') );
 
 	if($(this).data('pat-id') == null)
@@ -66,7 +66,7 @@ $('#og-list').empty();
 
 	$.ajax({
   			method: "GET",
-  			url: "pullItems.php?v=1.1",
+  			url: "readingHistoryJson.php?v=1.1",
  			data: { format: mat, available: loc, patron_record_num: pat  }
 		})
   		.done(function( books_json ) {
@@ -75,7 +75,7 @@ $('#og-list').empty();
 
 				// remove check digit for Encore display
 				var check = value['bib_record_num'].slice(0,-1);
-				
+
 				var encoreURL = 'http://encore.wblib.org/iii/encore/record/C__R' + value['bib_record_num'];
 				var imgURL = 'http://www.syndetics.com/index.aspx?isbn=' + value['ident'] + '/MC.GIF&client=arfayetteville&type=xw10\" alt=\"\"';
 
@@ -112,7 +112,7 @@ function updatePreferences(freq, patnum, pickup, pref) {
 				url: "updatePreferences.php?v=1.1",
 				data: { frequency: freq, patron_num: patnum, pickup_location: pickup, preference: pref  }
 			})
-  		
+
 
 }
 
