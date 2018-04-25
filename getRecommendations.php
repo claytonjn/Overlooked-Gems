@@ -87,7 +87,7 @@
 														END
 												WHERE	pnumber = '{$patron['pnumber']}'";
 						mysqli_query($overlookedGemsLink, $updateDateQuery) or die(mysqli_error($overlookedGemsLink));
-						exit; //got a result, hold sucessfully placed, don't keep trying
+						break; //got a result, hold sucessfully placed, don't keep trying
 					}
 				}
 			}
