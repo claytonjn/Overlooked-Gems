@@ -21,9 +21,9 @@
 	//Check Session Variables
 	if(isset($_POST['Logout']))
 	{
-		$_SESSION['LoggedIn']=0;
-		$_SESSION['FirstName']="";
-		$_SESSION['ParentID']="";
+		$_SESSION['LoggedIn']	= 0;
+		$_SESSION['pnumber']	= "";
+		$_SESSION['pid'] 		= "";
 		
 	}
 
