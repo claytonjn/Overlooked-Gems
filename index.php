@@ -43,9 +43,19 @@
 		$cardno = "";
 
 	if(isset($_GET['error']))
-		$error = "Sorry, you were not found in the system.<br>";
-	else
-		$error = "";
+		$error = $_GET['error'];
+	else {
+		$error = 0;
+		$errorDisplay = "";
+	}
+		
+	
+	if($error==1) {
+		$errorDisplay="Sorry, you were not found in the system.<br>";
+	}
+	elseif($error==2) {
+		$errorDisplay="In order to use this service, you must have your reading history turned on.<br>To do this, please login to \"My Account\", select Reading History and \"Opt In\".<br>";
+	}
 	
 	echo <<< Text
 		
@@ -54,7 +64,7 @@
 		</div>
 		
 		<div id="FormInfo">
-			<span style="color:#C00;">{$error}</span>
+			<span style="color:#C00;">{$errorDisplay}</span>
 			<form action="./process_login.php" method="POST" name="SIGNUP">
 				<div id="textbox">
 					Last Name:

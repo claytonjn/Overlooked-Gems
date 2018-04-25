@@ -11,10 +11,10 @@
 	$include_path="..";
 
 	//Clear session variables and go to Index Page
-	$_SESSION['LoggedIn']=0;
-	$_SESSION['FirstName']="";
-	$_SESSION['ParentID']="";
-
+	$_SESSION['LoggedIn']	= 0;
+	$_SESSION['pnumber']	= "";
+	$_SESSION['pid'] 		= "";
+	
 	header("Location: index.php");
 	exit;
 

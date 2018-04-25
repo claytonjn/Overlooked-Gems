@@ -22,10 +22,9 @@
 	//Check Session Variables
 	if(isset($_POST['Logout']))
 	{
-		$_SESSION['LoggedIn']=0;
-		$_SESSION['FirstName']="";
-		$_SESSION['ParentID']="";
-		
+		$_SESSION['LoggedIn']	= 0;
+		$_SESSION['pnumber']	= "";
+		$_SESSION['pid'] 		= "";
 	}
 
 	//Check Session Variables
@@ -46,7 +45,7 @@
 	//Connect to SierraDNA
 	$sierraDNAconn = db_sierradna();
 
-	$patronQuery = "SELECT 		PRF.last_name, PV.record_num
+	$patronQuery = "SELECT 		PRF.last_name, PV.record_num, PV.id
 					FROM 		sierra_view.varfield AS V
 					LEFT JOIN	sierra_view.patron_view AS PV ON PV.id = V.record_id
 					LEFT JOIN	sierra_view.patron_record_fullname AS PRF ON PRF.patron_record_id = V.record_id
@@ -79,56 +78,38 @@
 		else if($pgLastname == $lastname) {
 
 			//MATCH FOUND
-echo "HERE";
-die;
+			$pnumber = $row['record_num'];
+			$pid = $row['id'];
+			
+			$patronRHQuery = "	SELECT	is_reading_history_opt_in AS rhbool
+								FROM	sierra_view.patron_record AS PR
+								WHERE	PR.record_id = '{$pid}';";
+				 
+			$sierraPatronRHResult = pg_query($sierraDNAconn, $patronRHQuery) or die('Query failed: ' . pg_last_error());
+			
+			$rhRow = pg_fetch_assoc($sierraPatronRHResult);
+			
+			if($rhRow['rhbool']=='f') {
+				$error = 2;
+				header("Location: index.php?error=$error&lastname=$lastname&cardno=$cardno");
+				exit;
+			}	
+			
+			date_default_timezone_set('America/Detroit');
+			$next_trigger=date("Y-m-d",strtotime("tomorrow"));
+			
+			//Insert the patron into the MySQL table if they don't already exist
+			$query = "  INSERT IGNORE INTO 2018_patrons (pnumber, pickup_location, frequency, next_trigger)
+						VALUES ('{$pnumber}', '{$pickup_location}', '{$frequency}', '{$next_trigger}');";
+			
+			$result = mysqli_query($overlookedGemsLink, $query) or die(mysqli_error($overlookedGemsLink));			
+			
 			//Set Session Variables
-			$_SESSION['LoggedIn']=1;
+			$_SESSION['LoggedIn']	= 1;
+			$_SESSION['pnumber']	= $pnumber;
+			$_SESSION['pid'] 		= $pid;
 			
-			$PNumber = $row['record_num'];
-			
-			$accountQuery = "	SELECT 	*
-								FROM 	blt_parent
-								WHERE 	Pnumber = '$PNumber';";
-
-			$accountResult = mysqli_query($webConnect, $accountQuery) or die('Query failed: ' . mysqli_error());
-			
-			$rowCount =  mysqli_num_rows($accountResult);
-			
-			if($rowCount == 0) {
-				
-				//Patron doesn't exist yet
-				$insertQuery = "	INSERT INTO blt_parent (PNumber, Entry_Date)
-									VALUES ('$PNumber', NOW());";
-
-				$insertResult = mysqli_query($webConnect, $insertQuery) or die('Query failed: ' . mysqli_error());
-				
-			}
-				
-			//Patron does exist
-			$firstnameQuery = "	SELECT 		PRF.first_name
-								FROM 		sierra_view.patron_view AS PV
-								LEFT JOIN	sierra_view.patron_record_fullname AS PRF ON PRF.patron_record_id = PV.id
-								WHERE 		PV.record_num = '{$PNumber}';";
-
-			$firstnameResult = pg_query($sierraDNAconn, $firstnameQuery) or die('Query failed: ' . pg_last_error());
-			
-			$firstnameRow = pg_fetch_array($firstnameResult);
-			
-			$_SESSION['FirstName'] = $firstnameRow['first_name'];
-
-			
-			//Re-query the MySQL table to get the patron ID in our system
-			$accountQuery = "	SELECT 	*
-								FROM 	blt_parent
-								WHERE 	Pnumber = '$PNumber';";
-
-			$accountResult = mysqli_query($webConnect, $accountQuery) or die('Query failed: ' . mysqli_error());
-			
-			$infoRow = mysqli_fetch_array($accountResult);
-
-			$_SESSION['ParentID'] = $infoRow['ParentID'];
-			
-			header("Location: child_selection.php");
+			header("Location: myaccount.php");
 			exit;
 		}
 	}
