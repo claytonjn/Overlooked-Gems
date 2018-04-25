@@ -55,7 +55,7 @@
 			echo $e;
 		}
 
-		$prioritizedISBNS = pullReadingHistory($patron['pnumber'], $overlookedGemsLink, $sierraDNAconn);
+		$prioritizedISBNS = pullPrioritizedHistory($patron['pnumber'], $overlookedGemsLink, $sierraDNAconn);
 
 		while($isbn=pg_fetch_assoc($prioritizedISBNS)) {
 			$zolaRecommendations = zolaRecommendations($zolaSignature, cleanFromSierra("ident", $isbn['ident']), 100, NULL, "BB,BC,BH,WW,BK,AC", "TRUE");

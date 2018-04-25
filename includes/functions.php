@@ -93,7 +93,7 @@
 		}
 	}
 
-	function pullReadingHistory($pnumber, $overlookedGemsLink, $sierraDNAconn) {
+	function pullPrioritizedHistory($pnumber, $overlookedGemsLink, $sierraDNAconn) {
 		//Pull records from patron's rated reading history
 		$mysqlQuery = "	SELECT		bib_record_metadata_id
 						FROM		`2018_reading_history`
