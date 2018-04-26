@@ -43,7 +43,7 @@
     if(isset($_GET['filter'])) {
         $filter = $_GET['filter'];
 		if($filter != "") {
-			$mysqlQuery .= "    AND rating = {$filter}";
+			$mysqlQuery .= "    AND rating = '{$filter}'";
 		}
     }
 
