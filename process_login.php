@@ -99,8 +99,8 @@
 			$next_trigger=date("Y-m-d",strtotime("tomorrow"));
 			
 			//Insert the patron into the MySQL table if they don't already exist
-			$query = "  INSERT IGNORE INTO 2018_patrons (pnumber, pickup_location, frequency, next_trigger)
-						VALUES ('{$pnumber}', '{$pickup_location}', '{$frequency}', '{$next_trigger}');";
+			$query = "  INSERT IGNORE INTO 2018_patrons (pnumber, next_trigger)
+						VALUES ('{$pnumber}', '{$next_trigger}');";
 			
 			$result = mysqli_query($overlookedGemsLink, $query) or die(mysqli_error($overlookedGemsLink));			
 			
