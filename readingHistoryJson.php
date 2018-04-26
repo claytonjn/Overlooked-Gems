@@ -70,7 +70,7 @@
             $sierraQuery .= "({$row['bib_record_metadata_id']}, {$row['rating']}), ";
         }
         $sierraQuery = rtrim($sierraQuery,", ") . ";";
-        $sierraQuery .= "   SELECT      bv.record_num,
+        $sierraQuery .= "   SELECT      ph.bib_record_metadata_id, bv.record_num,
                                 		(	SELECT 		DISTINCT ON (v.record_id) v.field_content
                                 			FROM 		varfields v
                                 			WHERE 		v.record_id = ph.bib_record_metadata_id
