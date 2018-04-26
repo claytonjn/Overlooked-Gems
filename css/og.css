@@ -47,8 +47,23 @@ header .dropdown a.dropdown-item:hover {
 
 	}
 
-input {
-	background-color: #efefef;
+input[type=text], input[type=password] {
+	
+	-webkit-border-radius:	10px;
+	-moz-border-radius:		10px;
+	border-radius:			10px;
+	font-size:				18px;
+	padding:				10px;
+	width:					250px;
+}
+
+input[type=submit] {
+	
+	-webkit-border-radius:	10px;
+	-moz-border-radius:		10px;
+	border-radius:			10px;
+	padding:				5px;
+	width:					100px;
 }
 
 #og-list {
@@ -111,15 +126,18 @@ input {
 	font-size: 2vw;
 }
 
-
 #headertext {
-	;
+	font-size:	30px;
+	text-align:	center;
 }
 
-#FormInfo {
-	;'
+#forminfo {
+	margin-top:	20px;
+	text-align:	center;
 }
 
-#textbox {
-	;
+#textboxtitle {
+	color:#00529b;
+	font-size:	20px;
 }
+

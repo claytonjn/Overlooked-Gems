@@ -27,7 +27,6 @@
 		$_SESSION['LoggedIn']	= 0;
 		$_SESSION['pnumber']	= "";
 		$_SESSION['pid'] 		= "";
-		
 	}
 
 	//Check Session Variables
@@ -63,25 +62,32 @@
 	echo <<< Text
 		
 		<div id="headertext">
-			Sign-up Form
+			Book Subscription Service
 		</div>
 		
 		<div id="forminfo">
 			<span style="color:#C00;">{$errorDisplay}</span>
 			<form action="./process_login.php" method="POST" name="SIGNUP">
 				<div id="textbox">
-					Last Name:
-					<input type="text" name="lastname" value="{$lastname}">
+					<span id="textboxtitle">Last Name</span><br>
+					<input type="text" name="lastname" id="loginboxes" value="{$lastname}">
 				</div>
+				<br>
 				<div id="textbox">
-					Barcode:
-					<input type="password" name="cardno" value="{$cardno}">
+					<span id="textboxtitle">Barcode</span><br>
+					<input type="password" name="cardno" id="loginboxes" value="{$cardno}">
 				</div>
+				<br>
 				<div id="textbox">
-					<input type="submit" name="submit">
+					<input type="submit" name="submit" value="Login">
 				</div>
 			</form>
+			
+			<br><br>
+			Presented by: Overlooked Gems 2018
 		</div>
+		
+		
 		
 		
 Text;
