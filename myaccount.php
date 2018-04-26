@@ -46,7 +46,7 @@
 		//Set Default Values
 		$frequency = $preference['frequency'];
 		$pickup_location = $preference['pickup_location'];
-		$filter = "";
+		$filter = $sort = "";
 		
 		switch($frequency) {
 			case 'weekly':
@@ -99,7 +99,17 @@
 				break;
 		}		
 		
-		
+		switch($sort) {
+			case '':
+				$sort_text = 'Checkout Date';
+				break;
+			case '1':
+				$sort_text = 'Thumbs Up';
+				break;
+			case '-1':
+				$filter_text = 'Thumbs Down';
+				break;
+		}			
 		echo <<< HTML
 		  <!doctype html>
 		  <html lang="en">
@@ -159,18 +169,36 @@
 			</div>
 		  </div>
 		  
+		  
+		  
 		  <div class="dropdown" id="filter" data-val="{$filter}">
 		  `<span style="color:#FFF; font-weight:bold;">Filter By: </span>
 			<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				{$filter_text}
 			</button>
 			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-			<a class="dropdown-item" data-pickup="" href="#">No Filter</a>
-			<a class="dropdown-item" data-pickup="0" href="#">No Rating</a>
-			<a class="dropdown-item" data-pickup="1" href="#">Thumbs Up</a>
-			<a class="dropdown-item" data-pickup="-1" href="#">Thumbs Down</a>
+			<a class="dropdown-item" data-filter="" href="#">No Filter</a>
+			<a class="dropdown-item" data-filter="0" href="#">No Rating</a>
+			<a class="dropdown-item" data-filter="1" href="#">Thumbs Up</a>
+			<a class="dropdown-item" data-filter="-1" href="#">Thumbs Down</a>
 			</div>
 		  </div>
+		  
+		  
+		  
+		  <div class="dropdown" id="sort" data-val="{$sort}">
+		  `<span style="color:#FFF; font-weight:bold;">Sort By: </span>
+			<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				{$sort_text}
+			</button>
+			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+			<a class="dropdown-item" data-sort="" href="#">Checkout Date</a>
+			<a class="dropdown-item" data-sort="1" href="#">Thumbs Up</a>
+			<a class="dropdown-item" data-sort="-1" href="#">Thumbs Down</a>
+			</div>
+		  </div>
+		 
+		 
 		 
 		  <div class="dropdown" id="patron_id" data-val="null" style="float:right;">
 			<a href="./process_logout.php" style="color:#FFF;">
