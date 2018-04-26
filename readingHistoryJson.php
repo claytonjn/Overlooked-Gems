@@ -70,11 +70,7 @@
             $sierraQuery .= "({$row['bib_record_metadata_id']}, {$row['rating']}), ";
         }
         $sierraQuery = rtrim($sierraQuery,", ") . ";";
-        $sierraQuery .= "   SELECT      ph.bib_record_metadata_id, bv.record_num,
-                                		(	SELECT 		DISTINCT ON (v.record_id) v.field_content
-                                			FROM 		varfields v
-                                			WHERE 		v.record_id = ph.bib_record_metadata_id
-                                			ORDER BY	v.record_id, v.occ_num ASC	) AS ident,
+        $sierraQuery .= "   SELECT      ph.bib_record_metadata_id, bv.record_num, vi.ident,
                                 		CASE WHEN	vt.title != ''
                                 			THEN	vt.title
                                 			ELSE	CONCAT('|a', brp.best_title)
@@ -83,13 +79,17 @@
                             FROM		prioritized_history ph
                             LEFT JOIN	sierra_view.bib_view bv
                             		    ON ph.bib_record_metadata_id = bv.id
-                            LEFT JOIN	sierra_view.bib_record_property AS brp
-                                        ON ph.bib_record_metadata_id = brp.bib_record_id
+                            LEFT JOIN   (	SELECT 		DISTINCT ON (record_id) record_id, field_content AS ident
+                                            FROM 		varfields
+                                            ORDER BY	record_id, occ_num ASC	) vi
+                                        ON ph.bib_record_metadata_id = vi.record_id
                             LEFT JOIN	(	SELECT 	    DISTINCT ON (record_id) record_id, field_content AS title
                                 			FROM 		sierra_view.varfield
                                 			WHERE 		marc_tag = '245'
                                 			ORDER BY 	record_id, occ_num ASC	) vt
                             		    ON ph.bib_record_metadata_id = vt.record_id
+                            LEFT JOIN	sierra_view.bib_record_property AS brp
+                                        ON ph.bib_record_metadata_id = brp.bib_record_id
                             LEFT JOIN   reading_histories rh
                                         ON ph.bib_record_metadata_id = rh.bib_record_metadata_id
                             ORDER BY    ";
