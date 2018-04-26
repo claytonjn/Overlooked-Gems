@@ -29,6 +29,8 @@ $('#pickup_location').find('.dropdown-item').click(function() {
 
 $('#filter').find('.dropdown-item').click(function() {
 
+	$('#og-list').html('<img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif">');
+
 	$(this).closest('.dropdown').attr('data-val', $(this).data('filter') );
 
 	$('#filter').find('button').text( $(this).text());
@@ -39,6 +41,8 @@ $('#filter').find('.dropdown-item').click(function() {
 
 
 $('#sort').find('.dropdown-item').click(function() {
+
+	$('#og-list').html('<img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif">');
 
 	$(this).closest('.dropdown').attr('data-val', $(this).data('sort') );
 
@@ -78,14 +82,14 @@ function query(pnumber, filter, sort ) {
 
 	console.log(pnumber + ' - ' + filter  + ' - ' + sort)
 
-	$('#og-list').empty();
-
 	$.ajax({
   			method: "GET",
   			url: "readingHistoryJson.php?v=1.1",
  			data: { pnumber: pnumber, filter: filter, sort: sort   }
 		})
   		.done(function( books_json ) {
+
+			$('#og-list').empty();
 
 			$.each(books_json, function( index, value ) {
 
