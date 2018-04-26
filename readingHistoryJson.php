@@ -79,7 +79,7 @@
                                 			THEN	vt.title
                                 			ELSE	CONCAT('|a', brp.best_title)
                                 		END AS title,
-                        		        brp.best_author AS author
+                        		        brp.best_author AS author, ph.rating
                             FROM		prioritized_history ph
                             LEFT JOIN	sierra_view.bib_view bv
                             		    ON ph.bib_record_metadata_id = bv.id
