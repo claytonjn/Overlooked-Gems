@@ -82,6 +82,21 @@
 				$pickup_location_text = 'Westacres Lobby';
 				break;
 		}
+		
+		switch($filter) {
+			case '':
+				$filter_text = 'Drive Up Window';
+				break;
+			case '0':
+				$filter_text = 'Main Library Lobby';
+				break;
+			case '1':
+				$filter_text = 'Westacres Lobby';
+				break;
+			case '-1':
+				$filter_text = 'Westacres Lobby';
+				break;
+		}		
 				 
 		echo <<< HTML
 		  <!doctype html>
@@ -99,6 +114,7 @@
 			<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
 			<link href="//fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
 			<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+			<link href="//cdn.materialdesignicons.com/2.3.54/css/materialdesignicons.min.css" rel="stylesheet">
 			<link rel="stylesheet" href="css/og.css?v=1.8">
 		 
 		 
@@ -114,7 +130,7 @@
 		  <div class="dropdown" id="frequency" data-val="{$frequency}">
 			  <span style="color:#FFF; font-weight:bold;">Frequency: </span>
 			<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			{$frequency_text}
+				{$frequency_text}
 			</button>
 			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 			<a class="dropdown-item" data-frequency="Weekly" href="#">Weekly</a>
@@ -132,7 +148,7 @@
 		  <div class="dropdown" id="pickup_location" data-val="{$pickup_location}">
 		  `<span style="color:#FFF; font-weight:bold;">Pickup Location: </span>
 			<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			{$pickup_location_text}
+				{$pickup_location_text}
 			</button>
 			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 			<a class="dropdown-item" data-pickup="drive" href="#">Drive Up Window</a>
@@ -141,6 +157,18 @@
 			</div>
 		  </div>
 		  
+		  <div class="dropdown" id="filter" data-val="{$filter}">
+		  `<span style="color:#FFF; font-weight:bold;">Filter By: </span>
+			<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				{$filter_text}
+			</button>
+			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+			<a class="dropdown-item" data-pickup="" href="#">No Filter</a>
+			<a class="dropdown-item" data-pickup="0" href="#">No Rating</a>
+			<a class="dropdown-item" data-pickup="1" href="#">Thumbs Up</a>
+			<a class="dropdown-item" data-pickup="-1" href="#">Thumbs Down</a>
+			</div>
+		  </div>
 		 
 		  <div class="dropdown" id="patron_id" data-val="null" style="float:right;">
 			<a href="./process_logout.php" style="color:#FFF;">
