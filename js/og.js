@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-	query($('#patnum').attr('data-val'), null, null);
+	query($('#pnumber').attr('data-val'), null, null);
 
 });
 
@@ -11,7 +11,7 @@ $('#frequency').find('.dropdown-item').click(function() {
 
 	$('#frequency').find('button').text($(this).text() );
 
-	updatePreferences( $(this).data('frequency'), $('#patnum').attr('data-val'), $('#pickup_location').attr('data-val'), "frequency" );
+	updatePreferences( $(this).data('frequency'), $('#pnumber').attr('data-val'), $('#pickup_location').attr('data-val'), "frequency" );
 
 });
 
@@ -22,7 +22,7 @@ $('#pickup_location').find('.dropdown-item').click(function() {
 
 	$('#pickup_location').find('button').text( $(this).text());
 
-	updatePreferences( $('#frequency').attr('data-val'), $('#patnum').attr('data-val'), $(this).data('pickup'), "pickup_location" );
+	updatePreferences( $('#frequency').attr('data-val'), $('#pnumber').attr('data-val'), $(this).data('pickup'), "pickup_location" );
 
 });
 
@@ -33,7 +33,7 @@ $('#filter').find('.dropdown-item').click(function() {
 
 	$('#filter').find('button').text( $(this).text());
 
-	query($('#patnum').attr('data-val'), $('#filter').attr('data-val'), $('#sort').attr('data-val'));
+	query($('#pnumber').attr('data-val'), $('#filter').attr('data-val'), $('#sort').attr('data-val'));
 
 });
 
@@ -44,7 +44,7 @@ $('#sort').find('.dropdown-item').click(function() {
 
 	$('#sort').find('button').text( $(this).text());
 
-	query($('#patnum').attr('data-val'), $('#filter').attr('data-val'), $('#sort').attr('data-val'));
+	query($('#pnumber').attr('data-val'), $('#filter').attr('data-val'), $('#sort').attr('data-val'));
 
 });
 
@@ -62,6 +62,16 @@ $('#patron_id').find('.dropdown-item').click(function() {
 
 });
 
+
+function thumbsDisplay(pnumber, bib_record_metadata_id, rating) {
+	if(rating == 0) {
+		return '<i class="mdi mdi-thumb-down-outline" onclick="rate(' + pnumber + ', ' + bib_record_metadata_id + ', -1)"></i>&nbsp;&nbsp;&nbsp;&nbsp;<i class="mdi mdi-thumb-up-outline" onclick="rate(' + pnumber + ', ' + bib_record_metadata_id + ', 1)"></i>'
+	} else if(rating == 1) {
+		return '<i class="mdi mdi-thumb-down-outline" onclick="rate(' + pnumber + ', ' + bib_record_metadata_id + ', -1)"></i>&nbsp;&nbsp;&nbsp;&nbsp;<i class="mdi mdi-thumb-up" onclick="rate(' + pnumber + ', ' + bib_record_metadata_id + ', 0)"></i>'
+	} else if(rating == -1) {
+		return '<i class="mdi mdi-thumb-down" onclick="rate(' + pnumber + ', ' + bib_record_metadata_id + ', 0)"></i>&nbsp;&nbsp;&nbsp;&nbsp;<i class="mdi mdi-thumb-up-outline" onclick="rate(' + pnumber + ', ' + bib_record_metadata_id + ', 1)"></i>'
+	}
+}
 
 
 function query(pnumber, filter, sort ) {
@@ -81,15 +91,9 @@ function query(pnumber, filter, sort ) {
 
 				var encoreURL = 'http://encore.wblib.org/iii/encore/record/C__R' + value['record_num'];
 				var imgURL = 'http://www.syndetics.com/index.aspx?isbn=' + value['ident'] + '/MC.GIF&client=arfayetteville&type=xw10\" alt=\"\"';
-				if(value['rating'] == 0) {
-					var thumbs = '<i class="mdi mdi-thumb-down-outline"></i>&nbsp;&nbsp;&nbsp;&nbsp;<i class="mdi mdi-thumb-up-outline"></i>'
-				} else if(value['rating'] == 1) {
-					var thumbs = '<i class="mdi mdi-thumb-down-outline"></i>&nbsp;&nbsp;&nbsp;&nbsp;<i class="mdi mdi-thumb-up"></i>'
-				} else if(value['rating'] == -1) {
-					var thumbs = '<i class="mdi mdi-thumb-down"></i>&nbsp;&nbsp;&nbsp;&nbsp;<i class="mdi mdi-thumb-up-outline"></i>'
-				}
+				var thumbs = thumbsDisplay(pnumber, value['bib_record_metadata_id'], value['rating']);
 
-				$('#og-list').append('<li><a href="' + encoreURL + '"><img src="' + imgURL + '" onload="checkCovers(this)" alt="" /></a><a href="' + encoreURL + '" class="details"><span class="title">' + value['title'] + '</span><span class="author">' + value['author'] + '</span></a><br>' + thumbs + '</li>');
+				$('#og-list').append('<li id="' + value['bib_record_metadata_id'] + '"><a href="' + encoreURL + '"><img src="' + imgURL + '" onload="checkCovers(this)" alt="" /></a><a href="' + encoreURL + '" class="details"><span class="title">' + value['title'] + '</span><span class="author">' + value['author'] + '</span></a><br><div class="thumbs">' + thumbs + '</div></li>');
 
 			});
 
@@ -97,17 +101,33 @@ function query(pnumber, filter, sort ) {
 
 }
 
-function updatePreferences(freq, patnum, pickup, pref) {
+function updatePreferences(freq, pnumber, pickup, pref) {
 
-	console.log(freq + ' - ' + patnum + ' - ' + pickup + ' - ' + pref )
+	console.log(freq + ' - ' + pnumber + ' - ' + pickup + ' - ' + pref )
 
 	$('#og-list').empty();
 
 		$.ajax({
 				method: "GET",
 				url: "updatePreferences.php?v=1.1",
-				data: { frequency: freq, patron_num: patnum, pickup_location: pickup, preference: pref  }
+				data: { frequency: freq, patron_num: pnumber, pickup_location: pickup, preference: pref  }
 			})
+
+}
+
+
+function rate(pnumber, bib_record_metadata_id, rating) {
+
+	$.ajax({
+		method: "GET",
+		url: "rateTitle.php?v=1.1",
+		data: { pnumber: pnumber, bib_record_metadata_id: bib_record_metadata_id, rating: rating  }
+	})
+	.done(function( rate_result ) {
+
+		$('#' + bib_record_metadata_id + ' .thumbs').html(thumbsDisplay(pnumber, bib_record_metadata_id, rating));
+
+	});
 
 }
 

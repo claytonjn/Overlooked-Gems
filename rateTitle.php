@@ -30,7 +30,13 @@
                     WHERE   pnumber = {$pnumber}
                     AND     bib_record_metadata_id = {$bib_record_metadata_id};";
 
-    echo mysqli_query($overlookedGemsLink, $rateQuery) or die(mysqli_error($overlookedGemsLink));
+    $rateResult = mysqli_query($overlookedGemsLink, $rateQuery) or die(mysqli_error($overlookedGemsLink));
+
+	if($rateResult === TRUE) {
+		echo $rating;
+	} else {
+		echo "RATING UNSUCESSFUL";
+	}
 
 	mysqli_close($overlookedGemsLink);
 	unset($overlookedGemsLink);
