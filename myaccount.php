@@ -46,6 +46,7 @@
 		//Set Default Values
 		$frequency = $preference['frequency'];
 		$pickup_location = $preference['pickup_location'];
+		$filter = "";
 		
 		switch($frequency) {
 			case 'weekly':
@@ -85,19 +86,20 @@
 		
 		switch($filter) {
 			case '':
-				$filter_text = 'Drive Up Window';
+				$filter_text = 'No Filter';
 				break;
 			case '0':
-				$filter_text = 'Main Library Lobby';
+				$filter_text = 'No Rating';
 				break;
 			case '1':
-				$filter_text = 'Westacres Lobby';
+				$filter_text = 'Thumbs Up';
 				break;
 			case '-1':
-				$filter_text = 'Westacres Lobby';
+				$filter_text = 'Thumbs Down';
 				break;
 		}		
-				 
+		
+		
 		echo <<< HTML
 		  <!doctype html>
 		  <html lang="en">
