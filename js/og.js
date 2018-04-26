@@ -81,8 +81,15 @@ function query(pnumber, filter, sort ) {
 
 				var encoreURL = 'http://encore.wblib.org/iii/encore/record/C__R' + value['record_num'];
 				var imgURL = 'http://www.syndetics.com/index.aspx?isbn=' + value['ident'] + '/MC.GIF&client=arfayetteville&type=xw10\" alt=\"\"';
+				if(value['rating'] == 0) {
+					var thumbs = '<i class="mdi mdi-thumb-down-outline"></i>&nbsp;&nbsp;&nbsp;&nbsp;<i class="mdi mdi-thumb-up-outline"></i>'
+				} else if(value['rating'] == 1) {
+					var thumbs = '<i class="mdi mdi-thumb-down-outline"></i>&nbsp;&nbsp;&nbsp;&nbsp;<i class="mdi mdi-thumb-up"></i>'
+				} else if(value['rating'] == -1) {
+					var thumbs = '<i class="mdi mdi-thumb-down"></i>&nbsp;&nbsp;&nbsp;&nbsp;<i class="mdi mdi-thumb-up-outline"></i>'
+				}
 
-				$('#og-list').append('<li><a href="' + encoreURL + '"><img src="' + imgURL + '" onload="checkCovers(this)" alt="" /></a><a href="' + encoreURL + '" class="details"><span class="title">' + value['title'] + '</span><span class="author">' + value['author'] + '</span></a><br><i class="mdi mdi-thumb-down-outline"></i>&nbsp;&nbsp;&nbsp;&nbsp;<i class="mdi mdi-thumb-up-outline"></i></li>');
+				$('#og-list').append('<li><a href="' + encoreURL + '"><img src="' + imgURL + '" onload="checkCovers(this)" alt="" /></a><a href="' + encoreURL + '" class="details"><span class="title">' + value['title'] + '</span><span class="author">' + value['author'] + '</span></a><br>' + thumbs + '</li>');
 
 			});
 
