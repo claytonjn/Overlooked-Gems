@@ -27,6 +27,27 @@ $('#pickup_location').find('.dropdown-item').click(function() {
 });
 
 
+$('#filter').find('.dropdown-item').click(function() {
+
+	$(this).closest('.dropdown').attr('data-val', $(this).data('filter') );
+
+	$('#filter').find('button').text( $(this).text());
+
+	query($('#patnum').attr('data-val'), $('#filter').attr('data-val'), $('#sort').attr('data-val'));
+
+});
+
+
+$('#sort').find('.dropdown-item').click(function() {
+
+	$(this).closest('.dropdown').attr('data-val', $(this).data('sort') );
+
+	$('#sort').find('button').text( $(this).text());
+
+	query($('#patnum').attr('data-val'), $('#filter').attr('data-val'), $('#sort').attr('data-val'));
+
+});
+
 
 $('#patron_id').find('.dropdown-item').click(function() {
 
