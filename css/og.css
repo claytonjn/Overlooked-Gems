@@ -47,6 +47,9 @@ header .dropdown a.dropdown-item:hover {
 
 	}
 
+input {
+	background-color: #efefef;
+}
 
 #og-list {
 	padding: 0;
@@ -106,4 +109,17 @@ header .dropdown a.dropdown-item:hover {
 
 #og-list i {
 	font-size: 2vw;
+}
+
+
+#headertext {
+	;
+}
+
+#FormInfo {
+	;'
+}
+
+#textbox {
+	;
 }
